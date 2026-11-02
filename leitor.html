@@ -23,23 +23,200 @@
         <button class="botao-sair" onclick="encerrarSessao()">Sair</button>
       </div>
     </div>
+    <nav class="abas">
+      <button class="aba ativa" data-aba="acervo">Acervo</button>
+      <button class="aba" data-aba="meus-emprestimos">Meus empréstimos</button>
+      <button class="aba" data-aba="perfil">Meu perfil</button>
+      <button class="aba" data-aba="avisos">Meus avisos
+        <span id="contador-avisos" class="contador" title="Avisos não lidos" hidden></span>
+      </button>
+    </nav>
   </header>
 
   <main>
-    <div class="cartao">
-      <p class="vazio">🚧 Área do leitor em construção</p>
-    </div>
+
+    <!-- ============ ACERVO (montado por js/pesquisa.js) ============ -->
+    <section id="acervo" class="conteudo-aba ativa"></section>
+
+    <!-- ============ MEUS EMPRÉSTIMOS ============ -->
+    <section id="meus-emprestimos" class="conteudo-aba">
+      <p id="aviso-pendencia" class="mensagem erro bloco" hidden></p>
+
+      <!-- Formulário de pedido de prazo: aparece ao clicar em "Pedir mais prazo" -->
+      <div class="cartao destaque" id="cartao-pedir-prazo" hidden>
+        <h2>Pedir mais prazo</h2>
+        <p>Livro: <strong id="prazo-livro"></strong> · devolver até <span id="prazo-atual"></span></p>
+        <form id="form-prazo">
+          <div class="grade">
+            <label>Quantos dias a mais?
+              <select id="prazo-dias">
+                <option value="1">1 dia</option>
+                <option value="2">2 dias</option>
+                <option value="3" selected>3 dias</option>
+                <option value="5">5 dias</option>
+                <option value="7">7 dias</option>
+              </select>
+            </label>
+            <label>Nova data, se for aceito
+              <input type="text" id="prazo-nova-data" readonly>
+            </label>
+          </div>
+          <label class="espaco-cima">Motivo (opcional)
+            <input type="text" id="prazo-motivo" maxlength="200" placeholder="Ex.: preciso terminar um trabalho da escola">
+          </label>
+          <div class="botoes">
+            <button type="button" id="prazo-cancelar" class="secundario">Cancelar</button>
+            <button type="submit">Enviar pedido</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="cartao">
+        <h2>Com você agora</h2>
+        <p id="meus-ok" class="mensagem sucesso" hidden></p>
+        <table>
+          <thead>
+            <tr>
+              <th>Livro</th>
+              <th>Emprestado em</th>
+              <th>Devolver até</th>
+              <th>Situação</th>
+              <th>Multa</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="tabela-meus-abertos"></tbody>
+        </table>
+        <p id="meus-abertos-vazio" class="vazio">Você não está com nenhum livro.</p>
+      </div>
+
+      <div class="cartao">
+        <h2>Meu histórico</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Livro</th>
+              <th>Emprestado em</th>
+              <th>Devolvido em</th>
+              <th>Situação</th>
+            </tr>
+          </thead>
+          <tbody id="tabela-meu-historico"></tbody>
+        </table>
+        <p id="meu-historico-vazio" class="vazio">Você ainda não devolveu nenhum livro.</p>
+      </div>
+    </section>
+
+    <!-- ============ MEU PERFIL ============ -->
+    <section id="perfil" class="conteudo-aba">
+      <div class="cartao">
+        <h2>Meus dados <small id="perfil-cartao" class="cartao-numero"></small></h2>
+        <form id="form-perfil">
+          <div class="grade">
+            <label>Nome completo *
+              <input type="text" id="perfil-nome" required>
+            </label>
+            <label>Turma ou função
+              <input type="text" id="perfil-turma">
+            </label>
+            <label>E-mail principal * (usado no login)
+              <input type="email" id="perfil-email1" required>
+            </label>
+            <label>E-mail secundário
+              <input type="email" id="perfil-email2">
+            </label>
+            <label>Telefone principal
+              <input type="tel" id="perfil-tel1">
+            </label>
+            <label>Telefone secundário
+              <input type="tel" id="perfil-tel2">
+            </label>
+          </div>
+
+          <fieldset class="preferencias">
+            <legend>Preferências de leitura (para receber avisos de livros novos)</legend>
+
+            <p class="rotulo">Gêneros favoritos</p>
+            <div id="perfil-generos" class="grade-checks"></div>
+
+            <p class="rotulo">Autores favoritos</p>
+            <div class="linha-autor">
+              <input type="text" id="perfil-autor-input" list="perfil-lista-autores"
+                     placeholder="Digite um autor e clique em Adicionar">
+              <button type="button" id="perfil-autor-add" class="secundario">Adicionar</button>
+            </div>
+            <datalist id="perfil-lista-autores"></datalist>
+            <div id="perfil-autores" class="chips"></div>
+          </fieldset>
+
+          <p id="perfil-erro" class="mensagem erro" hidden></p>
+          <p id="perfil-ok" class="mensagem sucesso" hidden></p>
+
+          <div class="botoes">
+            <button type="submit">Salvar alterações</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="cartao">
+        <h2>Alterar senha</h2>
+        <form id="form-senha">
+          <div class="grade">
+            <label>Senha atual
+              <input type="password" id="senha-atual" autocomplete="current-password" required>
+            </label>
+            <label>Nova senha (mínimo 6)
+              <input type="password" id="senha-nova" autocomplete="new-password" minlength="6" required>
+            </label>
+            <label>Confirmar nova senha
+              <input type="password" id="senha-confirmar" autocomplete="new-password" minlength="6" required>
+            </label>
+          </div>
+          <p id="senha-erro" class="mensagem erro" hidden></p>
+          <p id="senha-ok" class="mensagem sucesso" hidden></p>
+          <div class="botoes">
+            <button type="submit">Alterar senha</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="cartao perigo">
+        <h2>Excluir conta</h2>
+        <p>Sua conta e seus dados de contato serão apagados. Isso <strong>não pode ser desfeito</strong>.</p>
+
+        <!-- Aparece quando há pendências: a exclusão fica bloqueada -->
+        <p id="excluir-bloqueado" class="mensagem erro" hidden></p>
+
+        <form id="form-excluir">
+          <label>Digite sua senha para confirmar
+            <input type="password" id="excluir-senha" autocomplete="current-password" required>
+          </label>
+          <p id="excluir-erro" class="mensagem erro" hidden></p>
+          <div class="botoes">
+            <button type="submit" class="perigo">Excluir minha conta</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ============ MEUS AVISOS ============ -->
+    <section id="avisos" class="conteudo-aba">
+      <div class="cartao">
+        <h2>Meus avisos</h2>
+        <p class="dica">Cópia dos e-mails enviados para você pela biblioteca.</p>
+        <div id="lista-avisos"></div>
+        <p id="avisos-vazio" class="vazio">Você ainda não recebeu nenhum aviso.</p>
+      </div>
+    </section>
+
   </main>
 
+  <script src="js/acervo-inicial.js"></script>
   <script src="js/tema.js"></script>
-  <script>
-    // Mostra "Olá, Nome (RE-0001)" no topo
-    const sessao = sessaoAtual();
-    const leitorLogado = sessao ? buscarLeitorPorId(sessao.leitorId) : null;
-    if (leitorLogado) {
-      document.getElementById("saudacao").textContent =
-        "Olá, " + leitorLogado.nome.split(" ")[0] + " (" + leitorLogado.cartao + ")";
-    }
-  </script>
+  <script src="js/abas.js"></script>
+  <script src="js/mostrar-senha.js"></script>
+  <script src="js/preferencias.js"></script>
+  <script src="js/pesquisa.js"></script>
+  <script src="js/area-leitor.js"></script>
 </body>
 </html>

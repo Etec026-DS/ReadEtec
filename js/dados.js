@@ -247,11 +247,72 @@ function situacaoEmprestimo(emp) {
   return { texto: "No prazo", classe: "ok", diasAtraso: 0, multa: 0 };
 }
 
+// Nome do leitor de um empréstimo: o nome ATUAL (se ele mudou o nome no perfil),
+// ou a cópia guardada no empréstimo, se o leitor já foi excluído
+function nomeDoLeitor(emp) {
+  const leitor = buscarLeitorPorId(emp.leitorId);
+  return leitor ? leitor.nome : emp.leitorNome;
+}
+
 // Empréstimos ainda não devolvidos de um leitor
 function emprestimosAbertosDoLeitor(leitorId) {
   return carregar("emprestimos").filter(function (emp) {
     return emp.leitorId === leitorId && emp.devolvidoEm === null;
   });
+}
+
+// Multas de livros já devolvidos que o leitor ainda não pagou
+function multasPendentesDoLeitor(leitorId) {
+  return carregar("emprestimos").filter(function (emp) {
+    return emp.leitorId === leitorId && emp.devolvidoEm !== null && emp.multa > 0 && !emp.multaPaga;
+  });
+}
+
+// Lista as pendências do leitor com a biblioteca (vazia = nenhuma pendência).
+// Usada para bloquear a exclusão da conta e novos empréstimos.
+function pendenciasDoLeitor(leitorId) {
+  const pendencias = [];
+
+  const abertos = emprestimosAbertosDoLeitor(leitorId);
+  if (abertos.length > 0) {
+    pendencias.push(abertos.length + " livro(s) ainda não devolvido(s)");
+  }
+
+  const multas = multasPendentesDoLeitor(leitorId);
+  if (multas.length > 0) {
+    const total = multas.reduce(function (soma, emp) {
+      return soma + emp.multa;
+    }, 0);
+    pendencias.push("multa não paga de " + formatarDinheiro(total));
+  }
+
+  return pendencias;
+}
+
+// ---------------------------------------------------------------------
+// E-MAILS / AVISOS (envio SIMULADO, ver docs: opção B)
+// Cada e-mail é guardado na lista "emails":
+//   { id, leitorId, tipo, para: [e-mails], assunto, corpo, enviadoEm, lido }
+// Mais tarde, para enviar de verdade (EmailJS), basta mudar ESTA função.
+// ---------------------------------------------------------------------
+function registrarEmail(leitorId, tipo, assunto, corpo) {
+  const leitor = buscarLeitorPorId(leitorId);
+  if (!leitor) {
+    return;
+  }
+
+  const emails = carregar("emails");
+  emails.push({
+    id: gerarId(),
+    leitorId: leitorId,
+    tipo: tipo, // "prazo", "lembrete", "atraso", "novidade"
+    para: [leitor.email1, leitor.email2].filter(Boolean), // envia para os dois e-mails, se houver
+    assunto: assunto,
+    corpo: corpo,
+    enviadoEm: new Date().toISOString(),
+    lido: false,
+  });
+  salvar("emails", emails);
 }
 
 // Diz se um leitor está com algum livro emprestado (ainda não devolvido)

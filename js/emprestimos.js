@@ -96,7 +96,7 @@ function mostrarEmprestimos() {
       return `
         <tr class="linha-${s.classe}">
           <td>${escapar(emp.livroTitulo)}</td>
-          <td>${escapar(emp.leitorNome)}<br><small>${emp.leitorCartao}</small></td>
+          <td>${escapar(nomeDoLeitor(emp))}<br><small>${emp.leitorCartao}</small></td>
           <td>${formatarData(emp.emprestadoEm)}</td>
           <td>${formatarData(emp.devolverAte)}</td>
           <td><span class="etiqueta situacao-${s.classe}">${s.texto}</span></td>
@@ -123,13 +123,17 @@ function mostrarEmprestimos() {
 
   tabelaEmpHistorico.innerHTML = devolvidos
     .map(function (emp) {
-      const situacao = emp.diasAtraso > 0
-        ? `<span class="etiqueta situacao-atraso">${emp.diasAtraso} dia(s) de atraso · multa ${formatarDinheiro(emp.multa)}</span>`
-        : '<span class="etiqueta situacao-ok">No prazo</span>';
+      let situacao = '<span class="etiqueta situacao-ok">No prazo</span>';
+      if (emp.multa > 0 && emp.multaPaga) {
+        situacao = `<span class="etiqueta situacao-alerta">${emp.diasAtraso} dia(s) de atraso · multa ${formatarDinheiro(emp.multa)} paga</span>`;
+      } else if (emp.multa > 0) {
+        situacao = `<span class="etiqueta situacao-atraso">${emp.diasAtraso} dia(s) de atraso · multa ${formatarDinheiro(emp.multa)}</span>
+          <button class="pequeno" onclick="registrarPagamento('${emp.id}')">Registrar pagamento</button>`;
+      }
       return `
         <tr>
           <td>${escapar(emp.livroTitulo)}</td>
-          <td>${escapar(emp.leitorNome)}<br><small>${emp.leitorCartao}</small></td>
+          <td>${escapar(nomeDoLeitor(emp))}<br><small>${emp.leitorCartao}</small></td>
           <td>${formatarData(emp.emprestadoEm)}</td>
           <td>${formatarData(emp.devolvidoEm)}</td>
           <td>${situacao}</td>
@@ -139,10 +143,99 @@ function mostrarEmprestimos() {
   document.getElementById("emp-historico-vazio").style.display = devolvidos.length === 0 ? "block" : "none";
 }
 
+// ---------- SOLICITAÇÕES DE MAIS PRAZO (feitas pelo leitor) ----------
+// O pedido fica dentro do próprio empréstimo:
+//   emp.solicitacao = { dias, motivo, pedidoEm, status, respondidoEm }
+//   status: "pendente", "aceita", "recusada" ou "cancelada"
+function solicitacoesPendentes() {
+  return carregar("emprestimos").filter(function (emp) {
+    return emp.devolvidoEm === null && emp.solicitacao && emp.solicitacao.status === "pendente";
+  });
+}
+
+function mostrarSolicitacoes() {
+  const pendentes = solicitacoesPendentes();
+  const tabela = document.getElementById("tabela-solicitacoes");
+
+  tabela.innerHTML = pendentes
+    .map(function (emp) {
+      const sol = emp.solicitacao;
+      const novaData = somarDias(new Date(emp.devolverAte), sol.dias);
+      return `
+        <tr>
+          <td>${escapar(emp.livroTitulo)}</td>
+          <td>${escapar(nomeDoLeitor(emp))}<br><small>${emp.leitorCartao}</small></td>
+          <td>${formatarData(emp.devolverAte)} → <strong>${formatarData(novaData)}</strong>
+              <br><small>+${sol.dias} dia(s)</small></td>
+          <td>${escapar(sol.motivo) || "-"}</td>
+          <td class="acoes-solicitacao">
+            <button onclick="responderSolicitacao('${emp.id}', true)">Aceitar</button>
+            <button class="secundario" onclick="responderSolicitacao('${emp.id}', false)">Recusar</button>
+          </td>
+        </tr>`;
+    })
+    .join("");
+
+  // O cartão inteiro só aparece quando existe algum pedido
+  document.getElementById("cartao-solicitacoes").hidden = pendentes.length === 0;
+
+  // Contador no botão da aba: "Empréstimos (2)"
+  const contador = document.getElementById("contador-solicitacoes");
+  contador.textContent = pendentes.length;
+  contador.hidden = pendentes.length === 0;
+}
+
+function responderSolicitacao(id, aceitar) {
+  const emprestimos = carregar("emprestimos");
+  const emp = emprestimos.find(function (e) {
+    return e.id === id;
+  });
+  const sol = emp.solicitacao;
+
+  if (aceitar) {
+    emp.devolverAte = somarDias(new Date(emp.devolverAte), sol.dias).toISOString();
+  }
+  sol.status = aceitar ? "aceita" : "recusada";
+  sol.respondidoEm = new Date().toISOString();
+  salvar("emprestimos", emprestimos);
+
+  // Avisa o leitor (aparece em "Meus avisos" e, no futuro, por e-mail)
+  if (aceitar) {
+    registrarEmail(emp.leitorId, "prazo",
+      `Pedido de prazo aceito: ${emp.livroTitulo}`,
+      `Olá, ${nomeDoLeitor(emp)}! Seu pedido de mais ${sol.dias} dia(s) para devolver "${emp.livroTitulo}" foi ACEITO. ` +
+      `A nova data de devolução é ${formatarData(emp.devolverAte)}.`);
+  } else {
+    registrarEmail(emp.leitorId, "prazo",
+      `Pedido de prazo recusado: ${emp.livroTitulo}`,
+      `Olá, ${nomeDoLeitor(emp)}. Seu pedido de mais prazo para "${emp.livroTitulo}" foi RECUSADO. ` +
+      `A data de devolução continua sendo ${formatarData(emp.devolverAte)}.`);
+  }
+
+  mensagemEmp("ok", `Pedido de ${nomeDoLeitor(emp)} ${aceitar ? "aceito" : "recusado"}. O leitor foi avisado.`);
+  atualizarAbaEmprestimos();
+}
+
+// ---------- PAGAMENTO DE MULTA ----------
+function registrarPagamento(id) {
+  const emprestimos = carregar("emprestimos");
+  const emp = emprestimos.find(function (e) {
+    return e.id === id;
+  });
+  if (!confirm(`Confirmar o pagamento da multa de ${formatarDinheiro(emp.multa)} de ${nomeDoLeitor(emp)}?`)) {
+    return;
+  }
+  emp.multaPaga = true;
+  salvar("emprestimos", emprestimos);
+  mensagemEmp("ok", "Pagamento da multa registrado.");
+  mostrarEmprestimos();
+}
+
 // Atualiza tudo da aba (listas e tabelas)
 function atualizarAbaEmprestimos() {
   preencherSelectLeitores();
   preencherSelectLivros();
+  mostrarSolicitacoes();
   mostrarEmprestimos();
 }
 
@@ -173,6 +266,10 @@ formEmprestimo.addEventListener("submit", function (evento) {
   });
   if (temAtraso) {
     mensagemEmp("erro", leitor.nome + " tem livro em atraso. Registre a devolução antes de um novo empréstimo.");
+    return;
+  }
+  if (multasPendentesDoLeitor(leitor.id).length > 0) {
+    mensagemEmp("erro", leitor.nome + " tem multa não paga. Registre o pagamento no histórico antes de um novo empréstimo.");
     return;
   }
   if (abertos.length >= MAX_EMPRESTIMOS_POR_LEITOR) {
@@ -210,7 +307,7 @@ function devolverLivro(id) {
   });
   const s = situacaoEmprestimo(emp);
 
-  let pergunta = `Confirmar a devolução de "${emp.livroTitulo}" por ${emp.leitorNome}?`;
+  let pergunta = `Confirmar a devolução de "${emp.livroTitulo}" por ${nomeDoLeitor(emp)}?`;
   if (s.multa > 0) {
     pergunta += `\n\n⚠️ ${s.diasAtraso} dia(s) de atraso: multa de ${formatarDinheiro(s.multa)}.`;
   }
@@ -222,6 +319,11 @@ function devolverLivro(id) {
   // Guarda o atraso e a multa do momento da devolução, para o histórico
   emp.diasAtraso = s.diasAtraso;
   emp.multa = s.multa;
+  emp.multaPaga = s.multa === 0; // se houve multa, ela fica pendente até ser paga
+  // Um pedido de prazo que ainda estava esperando resposta perde o sentido
+  if (emp.solicitacao && emp.solicitacao.status === "pendente") {
+    emp.solicitacao.status = "cancelada";
+  }
   salvar("emprestimos", emprestimos);
 
   mensagemEmp("ok", `Devolução de "${emp.livroTitulo}" registrada.`);
@@ -237,6 +339,10 @@ document.addEventListener("abaAberta", function (evento) {
     atualizarAbaEmprestimos();
   }
 });
+
+// A cada 30 segundos, confere se chegou pedido novo de algum leitor
+// (o leitor pode estar usando o sistema em outra aba deste navegador)
+setInterval(mostrarSolicitacoes, 30000);
 
 // Valores iniciais: data de hoje, e não deixa escolher datas futuras
 campoEmpData.value = hojeParaCampo();

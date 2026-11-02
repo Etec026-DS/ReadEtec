@@ -26,7 +26,9 @@
     <nav class="abas">
       <button class="aba ativa" data-aba="livros">Livros</button>
       <button class="aba" data-aba="leitores">Leitores</button>
-      <button class="aba" data-aba="emprestimos">Empréstimos</button>
+      <button class="aba" data-aba="emprestimos">Empréstimos
+        <span id="contador-solicitacoes" class="contador" title="Pedidos de prazo esperando resposta" hidden></span>
+      </button>
       <button class="aba" data-aba="pesquisa">Pesquisa</button>
       <button class="aba" data-aba="notificacoes">Notificações</button>
     </nav>
@@ -165,6 +167,23 @@
 
     <!-- ============ ABA EMPRÉSTIMOS ============ -->
     <section id="emprestimos" class="conteudo-aba">
+      <!-- Só aparece quando algum leitor pediu mais prazo -->
+      <div class="cartao destaque" id="cartao-solicitacoes" hidden>
+        <h2>⏳ Pedidos de mais prazo</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Livro</th>
+              <th>Leitor</th>
+              <th>Prazo atual → novo</th>
+              <th>Motivo</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="tabela-solicitacoes"></tbody>
+        </table>
+      </div>
+
       <div class="cartao">
         <h2>Novo empréstimo</h2>
         <form id="form-emprestimo">

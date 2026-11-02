@@ -158,10 +158,11 @@ function editarLeitor(id) {
   campoLeitorNome.focus();
 }
 
-// Exclui um leitor, mas não se ele estiver com algum livro emprestado
+// Exclui um leitor, mas não se ele tiver pendências (livro ou multa)
 function excluirLeitor(id) {
-  if (leitorTemEmprestimoAberto(id)) {
-    alert("Este leitor está com um livro emprestado e não pode ser excluído. Registre a devolução primeiro.");
+  const pendencias = pendenciasDoLeitor(id);
+  if (pendencias.length > 0) {
+    alert("Este leitor não pode ser excluído. Pendências: " + pendencias.join(" e ") + ".");
     return;
   }
 
