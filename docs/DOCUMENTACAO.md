@@ -46,7 +46,11 @@ O sistema tem **dois tipos de usuário**, cada um com permissões próprias:
 | RF18 | **Login** de administrador (usuário e senha fixos) e de leitor (e-mail e senha) |
 | RF19 | **Criação de conta** pelo próprio leitor, sem permitir e-mail repetido |
 | RF20 | **Controle de acesso:** cada página só abre para o tipo de usuário certo; botão "Sair" |
-| RF21 | **Área do leitor:** pesquisar o acervo, ver os seus empréstimos, editar o perfil e ver os seus avisos |
+| RF21 | **Área do leitor:** pesquisar o acervo, ver os livros que estão com ele e o seu histórico, editar o perfil (nome, contatos, preferências) e ver os seus avisos |
+| RF22 | O leitor pode **alterar a senha**, informando a senha atual |
+| RF23 | O leitor pode **excluir a própria conta**, confirmando com a senha, desde que não tenha pendências |
+| RF24 | O leitor pode **pedir mais prazo** (1 a 7 dias, com motivo opcional); o admin **aceita ou recusa**, e o leitor recebe um aviso com a resposta |
+| RF25 | O admin **registra o pagamento** das multas |
 
 **Desejáveis (se der tempo):**
 
@@ -71,6 +75,20 @@ O sistema tem **dois tipos de usuário**, cada um com permissões próprias:
 - Acesso dos leitores ao sistema (login próprio)
 - Banco de dados em servidor, para os dados serem compartilhados entre computadores
 - Login seguro: nesta versão o login é simbólico (a senha do admin está no código e as senhas ficam no navegador). Um sistema real precisaria de um servidor com senhas criptografadas
+
+### Regras de negócio dos empréstimos
+
+| Código | Regra |
+|---|---|
+| RN01 | Só livros **disponíveis** podem ser emprestados |
+| RN02 | Prazo de devolução: **7 dias** após o empréstimo |
+| RN03 | Cada leitor pode ter no máximo **3 livros** ao mesmo tempo |
+| RN04 | Leitor com livro **atrasado** não pode pegar outro até devolvê-lo |
+| RN05 | Multa de **R$ 1,00 por dia** de atraso, calculada na devolução |
+| RN06 | Livro emprestado **não pode ser excluído** |
+| RN07 | **Pendência** = livro não devolvido ou multa não paga. Leitor com pendência não pode ter a conta excluída (nem por ele mesmo, nem pelo admin) |
+| RN08 | Leitor com **multa não paga** não pode pegar novos livros |
+| RN09 | Só é possível pedir mais prazo **antes do vencimento** e com um pedido por vez |
 
 ### Requisitos não funcionais (como o sistema deve ser)
 
