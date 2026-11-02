@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ReadEtec - Biblioteca</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Cabeçalho com o nome do sistema e o menu de abas -->
+  <header class="topo">
+    <h1>📚 ReadEtec</h1>
+    <nav class="abas">
+      <button class="aba ativa" data-aba="livros">Livros</button>
+      <button class="aba" data-aba="leitores">Leitores</button>
+      <button class="aba" data-aba="emprestimos">Empréstimos</button>
+      <button class="aba" data-aba="pesquisa">Pesquisa</button>
+      <button class="aba" data-aba="notificacoes">Notificações</button>
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- ============ ABA LIVROS ============ -->
+    <section id="livros" class="conteudo-aba ativa">
+      <div class="cartao">
+        <h2 id="titulo-form-livro">Cadastrar livro</h2>
+
+        <form id="form-livro">
+          <!-- Campo escondido: guarda o id quando estamos EDITANDO um livro -->
+          <input type="hidden" id="livro-id">
+
+          <div class="grade">
+            <label>Título
+              <input type="text" id="livro-titulo" required>
+            </label>
+            <label>Autor
+              <input type="text" id="livro-autor" required>
+            </label>
+            <label>Gênero
+              <select id="livro-genero" required></select>
+            </label>
+            <label>Ano
+              <input type="number" id="livro-ano" min="1000" max="2100">
+            </label>
+          </div>
+
+          <div class="botoes">
+            <button type="button" id="livro-limpar" class="secundario">Limpar</button>
+            <button type="submit">Salvar</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="cartao">
+        <h2>Acervo</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Título</th>
+              <th>Autor</th>
+              <th>Gênero</th>
+              <th>Ano</th>
+              <th>Situação</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tabela-livros"></tbody>
+        </table>
+        <p id="livros-vazio" class="vazio">Nenhum livro cadastrado ainda.</p>
+      </div>
+    </section>
+
+    <!-- ============ ABAS AINDA EM CONSTRUÇÃO ============ -->
+    <section id="leitores" class="conteudo-aba">
+      <div class="cartao"><p class="vazio">🚧 Em construção</p></div>
+    </section>
+
+    <section id="emprestimos" class="conteudo-aba">
+      <div class="cartao"><p class="vazio">🚧 Em construção</p></div>
+    </section>
+
+    <section id="pesquisa" class="conteudo-aba">
+      <div class="cartao"><p class="vazio">🚧 Em construção</p></div>
+    </section>
+
+    <section id="notificacoes" class="conteudo-aba">
+      <div class="cartao"><p class="vazio">🚧 Em construção</p></div>
+    </section>
+
+  </main>
+
+  <!-- A ordem importa: dados.js primeiro, porque os outros usam as funções dele -->
+  <script src="js/dados.js"></script>
+  <script src="js/abas.js"></script>
+  <script src="js/livros.js"></script>
+</body>
+</html>
