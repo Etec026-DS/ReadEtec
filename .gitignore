@@ -1,0 +1,7 @@
+# Material do professor (não faz parte do código)
+*.pdf
+
+# Arquivos do sistema e do editor
+.DS_Store
+Thumbs.db
+.vscode/
