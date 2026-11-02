@@ -113,7 +113,7 @@ function criarPesquisa(caixa) {
     tabela.innerHTML = encontrados
       .map(function (livro) {
         return `
-          <tr>
+          <tr data-livro-id="${livro.id}">
             <td>${escapar(livro.titulo)}</td>
             <td>${escapar(livro.autor)}</td>
             <td>${escapar(livro.genero)}</td>

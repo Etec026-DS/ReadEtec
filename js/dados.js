@@ -112,13 +112,15 @@ function carregarAcervoInicial() {
       genero: exemplo.genero,
       ano: exemplo.ano,
       exemplares: exemplo.exemplares,
+      capa: exemplo.capa,
+      sinopse: exemplo.sinopse,
       criadoEm: dataInclusao.toISOString(),
     });
   });
 
   salvar("livros", livros);
   localStorage.setItem("acervoInicialCarregado", "sim");
-  localStorage.setItem("exemplaresAtualizados", "sim");
+  localStorage.setItem("versaoAcervo", VERSAO_ACERVO);
 }
 
 // ---------------------------------------------------------------------
@@ -391,23 +393,79 @@ function etiquetaDisponibilidade(livro) {
   return `<span class="etiqueta disponivel">${disponiveis} de ${total} disponíve${disponiveis === 1 ? "l" : "is"}</span>`;
 }
 
-// Para quem abriu o sistema ANTES de existirem exemplares: coloca as
-// quantidades do acervo inicial nos livros de exemplo que ainda não têm.
-// Roda uma única vez por navegador (marca "exemplaresAtualizados").
+// MIGRAÇÃO: para quem abriu o sistema numa versão ANTERIOR (sem exemplares,
+// capas ou sinopses), completa os livros de exemplo com o que estiver faltando.
+// A "versão do acervo" salva no navegador evita rodar isso toda vez.
+const VERSAO_ACERVO = "3"; // 2 = exemplares, 3 = capas e sinopses
+
 function atualizarExemplaresDoAcervo() {
-  if (localStorage.getItem("exemplaresAtualizados") === "sim") {
+  if (localStorage.getItem("versaoAcervo") === VERSAO_ACERVO) {
     return;
   }
   const livros = carregar("livros");
   livros.forEach(function (livro) {
-    if (livro.exemplares) {
-      return;
-    }
     const exemplo = ACERVO_INICIAL.find(function (e) {
       return e.titulo.toLowerCase() === livro.titulo.toLowerCase();
     });
-    livro.exemplares = exemplo ? exemplo.exemplares : 1;
+    if (!livro.exemplares) {
+      livro.exemplares = exemplo ? exemplo.exemplares : 1;
+    }
+    if (exemplo && !livro.capa) {
+      livro.capa = exemplo.capa;
+    }
+    if (exemplo && !livro.sinopse) {
+      livro.sinopse = exemplo.sinopse;
+    }
   });
   salvar("livros", livros);
-  localStorage.setItem("exemplaresAtualizados", "sim");
+  localStorage.setItem("versaoAcervo", VERSAO_ACERVO);
+}
+
+// ---------------------------------------------------------------------
+// CAPAS (Open Library: acervo aberto e gratuito, openlibrary.org)
+// livro.capa = número da capa na Open Library
+//            = 0 quando já procuramos e não existe capa
+//            = undefined quando ainda não procuramos
+// ---------------------------------------------------------------------
+function enderecoDaCapa(numeroCapa) {
+  return "https://covers.openlibrary.org/b/id/" + numeroCapa + "-M.jpg";
+}
+
+// Procura na internet a capa de um livro cadastrado pelo admin.
+// "async/await": a busca demora um pouco, e o resto do site continua
+// funcionando enquanto a resposta não chega.
+async function buscarCapaNaInternet(livro) {
+  // 1ª tentativa: título e autor separados (mais precisa)
+  // 2ª tentativa: busca geral, que acha melhor títulos traduzidos
+  const tentativas = [
+    { title: livro.titulo, author: livro.autor },
+    { q: livro.titulo + " " + livro.autor },
+  ];
+
+  for (const tentativa of tentativas) {
+    const parametros = new URLSearchParams(
+      Object.assign({ limit: "10", fields: "cover_i,edition_count" }, tentativa)
+    );
+    try {
+      // Desiste depois de 15 segundos (a Open Library às vezes demora muito)
+      const resposta = await fetch("https://openlibrary.org/search.json?" + parametros, {
+        signal: AbortSignal.timeout(15000),
+      });
+      const dados = await resposta.json();
+      // Entre os resultados com capa, escolhe a obra com mais edições (a mais conhecida)
+      const comCapa = dados.docs
+        .filter(function (d) {
+          return d.cover_i;
+        })
+        .sort(function (a, b) {
+          return (b.edition_count || 0) - (a.edition_count || 0);
+        });
+      if (comCapa.length > 0) {
+        return comCapa[0].cover_i;
+      }
+    } catch (erro) {
+      return null; // sem internet ou demorou demais: tenta de novo numa próxima vez
+    }
+  }
+  return 0; // procurou e não existe capa
 }

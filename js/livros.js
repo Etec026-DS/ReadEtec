@@ -14,6 +14,7 @@ const campoAutor = document.getElementById("livro-autor");
 const campoGenero = document.getElementById("livro-genero");
 const campoAno = document.getElementById("livro-ano");
 const campoExemplares = document.getElementById("livro-exemplares");
+const campoSinopse = document.getElementById("livro-sinopse");
 const botaoLimparLivro = document.getElementById("livro-limpar");
 const tituloFormLivro = document.getElementById("titulo-form-livro");
 const tabelaLivros = document.getElementById("tabela-livros");
@@ -40,7 +41,7 @@ function mostrarLivros() {
 
   livros.forEach(function (livro) {
     tabelaLivros.innerHTML += `
-      <tr>
+      <tr data-livro-id="${livro.id}">
         <td>${escapar(livro.titulo)}</td>
         <td>${escapar(livro.autor)}</td>
         <td>${escapar(livro.genero)}</td>
@@ -80,6 +81,7 @@ formLivro.addEventListener("submit", function (evento) {
     genero: campoGenero.value,
     ano: campoAno.value ? Number(campoAno.value) : null,
     exemplares: Number(campoExemplares.value),
+    sinopse: campoSinopse.value.trim(),
   };
 
   if (estaEmBranco(dados.titulo) || estaEmBranco(dados.autor)) {
@@ -120,6 +122,12 @@ formLivro.addEventListener("submit", function (evento) {
     const livro = livros.find(function (l) {
       return l.id === campoId.value;
     });
+    // Mudou o título ou o autor? A capa antiga pode não servir mais:
+    // apaga, para o sistema procurar de novo a capa certa
+    if (normalizarTexto(livro.titulo) !== normalizarTexto(dados.titulo) ||
+        normalizarTexto(livro.autor) !== normalizarTexto(dados.autor)) {
+      delete livro.capa;
+    }
     Object.assign(livro, dados);
   }
 
@@ -140,6 +148,7 @@ function editarLivro(id) {
   campoGenero.value = livro.genero;
   campoAno.value = livro.ano || "";
   campoExemplares.value = totalExemplares(livro);
+  campoSinopse.value = livro.sinopse || "";
   // O navegador já avisa se tentar diminuir abaixo dos emprestados
   campoExemplares.min = Math.max(1, exemplaresEmprestados(livro.id));
 

@@ -62,6 +62,11 @@
               <input type="number" id="livro-exemplares" min="1" max="99" value="1" required>
             </label>
           </div>
+          <label class="espaco-cima">Sinopse (aparece ao passar o mouse sobre o livro)
+            <textarea id="livro-sinopse" rows="3" maxlength="600"
+                      placeholder="Um resumo curto da história, sem contar o final"></textarea>
+          </label>
+          <p class="dica">A capa é buscada automaticamente na Open Library (acervo aberto de livros).</p>
 
           <div class="botoes">
             <button type="button" id="livro-limpar" class="secundario">Limpar</button>
@@ -273,6 +278,7 @@
   <script src="js/leitores.js"></script>
   <script src="js/emprestimos.js"></script>
   <script src="js/pesquisa.js"></script>
+  <script src="js/capa-livro.js"></script>
   <script>
     // Monta a pesquisa na aba e atualiza sempre que a aba for aberta
     // (um livro pode ter sido cadastrado ou emprestado nesse meio-tempo)
