@@ -51,6 +51,7 @@ O sistema tem **dois tipos de usuário**, cada um com permissões próprias:
 | RF23 | O leitor pode **excluir a própria conta**, confirmando com a senha, desde que não tenha pendências |
 | RF24 | O leitor pode **pedir mais prazo** (1 a 7 dias, com motivo opcional); o admin **aceita ou recusa**, e o leitor recebe um aviso com a resposta |
 | RF25 | O admin **registra o pagamento** das multas |
+| RF26 | Ao passar o mouse (ou tocar, no celular) sobre um livro, mostrar a **capa** e uma **sinopse** curta. As capas vêm da Open Library (acervo aberto e gratuito); para livros novos, a capa é buscada automaticamente |
 
 **Desejáveis (se der tempo):**
 
