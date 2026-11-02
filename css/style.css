@@ -482,3 +482,46 @@ td small {
 .cartao form .mensagem {
   margin-top: 12px;
 }
+
+/* ===== Pesquisa ===== */
+.pesquisa-campo {
+  width: 100%;
+  font-size: 1.05rem;
+  padding: 10px 12px;
+}
+
+.filtros-genero {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* Botões de filtro em formato de "pílula" */
+button.filtro {
+  background: var(--cor-fundo);
+  color: var(--cor-texto);
+  border: 1px solid var(--cor-borda);
+  border-radius: 999px;
+  padding: 4px 14px;
+  font-size: 0.9rem;
+}
+
+button.filtro:hover {
+  border-color: var(--cor-principal);
+}
+
+button.filtro.ativo {
+  background: var(--cor-principal);
+  border-color: var(--cor-principal);
+  color: white;
+}
+
+.pesquisa-disponiveis {
+  margin-top: 14px;
+}
+
+.pesquisa-contagem {
+  margin-top: 0;
+  color: var(--cor-texto-suave);
+  font-size: 0.9rem;
+}

@@ -50,6 +50,18 @@ function escapar(texto) {
   return div.innerHTML;
 }
 
+// Deixa um texto "comparável": tudo minúsculo e sem acentos.
+//   "Fiódor DOSTOIÉVSKI" -> "fiodor dostoievski"
+// Como funciona: normalize("NFD") separa cada letra do seu acento
+// ("é" vira "e" + "´"), e o replace apaga os acentos que sobraram soltos.
+function normalizarTexto(texto) {
+  return (texto || "")
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
 // Transforma uma data salva ("2026-11-02T15:00:00.000Z") em "02/11/2026"
 function formatarData(dataIso) {
   if (!dataIso) {

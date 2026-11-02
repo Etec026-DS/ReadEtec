@@ -167,9 +167,9 @@
       <div class="cartao"><p class="vazio">🚧 Em construção</p></div>
     </section>
 
-    <section id="pesquisa" class="conteudo-aba">
-      <div class="cartao"><p class="vazio">🚧 Em construção</p></div>
-    </section>
+    <!-- ============ ABA PESQUISA ============ -->
+    <!-- O conteúdo é montado por js/pesquisa.js -->
+    <section id="pesquisa" class="conteudo-aba"></section>
 
     <section id="notificacoes" class="conteudo-aba">
       <div class="cartao"><p class="vazio">🚧 Em construção</p></div>
@@ -185,5 +185,14 @@
   <script src="js/mostrar-senha.js"></script>
   <script src="js/preferencias.js"></script>
   <script src="js/leitores.js"></script>
+  <script src="js/pesquisa.js"></script>
+  <script>
+    // Monta a pesquisa na aba e atualiza sempre que a aba for aberta
+    // (um livro pode ter sido cadastrado ou emprestado nesse meio-tempo)
+    const pesquisaAdmin = criarPesquisa(document.getElementById("pesquisa"));
+    document.addEventListener("abaAberta", function (evento) {
+      if (evento.detail === "pesquisa") pesquisaAdmin.atualizar();
+    });
+  </script>
 </body>
 </html>
