@@ -32,8 +32,8 @@ O **ReadEtec** resolve esses problemas centralizando o cadastro de livros e leit
 
 | Código | Requisito |
 |---|---|
-| RF01 | Cadastrar, editar e excluir livros (título, autor, gênero, ano) |
-| RF02 | Cadastrar leitores (nome, turma/função, contato) |
+| RF01 | Cadastrar, editar e excluir livros (título, autor, gênero, ano). A **data de inclusão** é registrada automaticamente. O sistema já vem com um **acervo inicial de 50 livros** (25 brasileiros e 25 estrangeiros) |
+| RF02 | Cadastrar leitores (nome, turma/função, **e-mail principal e secundário**, **telefone principal e secundário**) |
 | RF03 | Gerar automaticamente um **número de cartão da biblioteca** para cada leitor cadastrado |
 | RF04 | Realizar empréstimo de um livro para um leitor |
 | RF05 | **Impedir o empréstimo de um livro que já está emprestado** |
@@ -49,6 +49,16 @@ O **ReadEtec** resolve esses problemas centralizando o cadastro de livros e leit
 | RF10 | Listar os empréstimos **atrasados** (agenda de devoluções) |
 | RF11 | Mostrar estatísticas: livros, autores e gêneros mais emprestados |
 | RF12 | Calcular a multa por atraso (ex.: R$ 1,00 por dia) |
+
+**Notificações por e-mail:**
+
+| Código | Requisito |
+|---|---|
+| RF13 | Cadastrar as **preferências** do leitor: autores e gêneros favoritos |
+| RF14 | Enviar e-mail de **lembrete** quando faltarem 2 dias para o fim do prazo do empréstimo |
+| RF15 | Enviar e-mail de **atraso** quando o prazo do empréstimo for ultrapassado |
+| RF16 | Enviar e-mail de **novidade** aos leitores cujas preferências combinam com o autor ou o gênero de um livro recém-cadastrado |
+| RF17 | Usar **modelos de e-mail pré-programados** para cada tipo de aviso e registrar os e-mails enviados num histórico |
 
 **Fora do escopo desta versão (melhorias futuras):**
 - Multa por dano ao livro
@@ -95,16 +105,41 @@ O sistema tem **uma única página** com um menu de abas no topo. Cada aba mostr
 │  [ Livros ] [■ Leitores ] [ Empréstimos ] [ Pesquisa ]      │
 ├─────────────────────────────────────────────────────────────┤
 │  Cadastrar leitor                                           │
-│  Nome:  [_______________________]                           │
-│  Turma/Função: [____________]  Contato: [________________]  │
+│  Nome:  [_______________________]  Turma/Função: [_______]  │
+│  E-mail principal:  [______________]  Secundário: [_______] │
+│  Telefone principal:[______________]  Secundário: [_______] │
+│  Preferências                                               │
+│  Autores: [ Machado de Assis, Tolkien ]                     │
+│  Gêneros: [✓] Romance [ ] Fantasia [✓] Terror [ ] ...       │
 │                                     [ Limpar ] [ Salvar ]   │
 ├─────────────────────────────────────────────────────────────┤
-│  Cartão   │ Nome            │ Turma   │ Contato        │    │
+│  Cartão   │ Nome            │ Turma   │ E-mail         │    │
 │  RE-0001  │ Ana Souza       │ 2º DS   │ ana@email.com  │✏️🗑│
-│  RE-0002  │ Bruno Lima      │ Prof.   │ (11) 9999-0000 │✏️🗑│
+│  RE-0002  │ Bruno Lima      │ Prof.   │ bruno@email.com│✏️🗑│
 └─────────────────────────────────────────────────────────────┘
 ```
 - O número do cartão (RE-0001, RE-0002...) é gerado automaticamente ao salvar.
+- O e-mail principal é obrigatório; o secundário e os telefones são opcionais.
+- Os avisos são enviados para os dois e-mails, quando houver.
+
+### Tela 6: Notificações (RF14 a RF17)
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  [ Livros ] [ Leitores ] [ Empréstimos ] [ Pesquisa ] [■ Notificações ] │
+├─────────────────────────────────────────────────────────────┤
+│  [ Verificar prazos e enviar avisos ]                       │
+├─────────────────────────────────────────────────────────────┤
+│  Histórico de e-mails enviados                              │
+│  Data  │ Tipo         │ Para           │ Assunto            │
+│  02/11 │ ⏰ Lembrete  │ ana@email.com  │ Seu prazo vence... │
+│  02/11 │ ⚠️ Atraso    │ bruno@email.com│ Livro em atraso    │
+│  02/11 │ ✨ Novidade  │ ana@email.com  │ Novo livro de M... │
+└─────────────────────────────────────────────────────────────┘
+```
+- Ao abrir o sistema (ou ao clicar no botão), os empréstimos são verificados e os avisos de lembrete e atraso são enviados.
+- Ao cadastrar um livro, os leitores com preferência pelo autor ou gênero recebem o aviso de novidade.
+- Cada aviso é enviado só uma vez, para o leitor não receber e-mails repetidos.
 
 ### Tela 3: Empréstimos e devoluções (RF04 a RF07, RF10)
 
@@ -162,3 +197,4 @@ O sistema tem **uma única página** com um menu de abas no topo. Cada aba mostr
 | 02/11 | Claude Code | Escolha da tecnologia e configuração do Git/GitHub | Escolhemos HTML/CSS/JS com localStorage; repositório criado na organização |
 | 02/11 | Claude Code | Revisão do texto de problema, público-alvo e requisitos | As ideias foram do grupo; a IA organizou o texto e ajudou a priorizar os requisitos |
 | 02/11 | Claude Code | Rascunho do protótipo das telas | Usado como base; o grupo revisou e redesenhou as telas |
+| 02/11 | Claude Code | Como enviar e-mails automáticos de prazo, atraso e novidades | O grupo definiu os requisitos; a IA explicou as limitações de um site estático e as opções de envio |
