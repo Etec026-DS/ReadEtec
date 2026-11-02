@@ -24,3 +24,5 @@ Abra o arquivo `index.html` no navegador. Não é preciso instalar nada.
 ## Autores
 
 - Lucas Sotero
+- Isabelle Antunes
+- Caroline Cheminand
