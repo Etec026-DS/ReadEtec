@@ -34,7 +34,7 @@ O sistema tem **dois tipos de usuário**, cada um com permissões próprias:
 
 | Código | Requisito |
 |---|---|
-| RF01 | Cadastrar, editar e excluir livros (título, autor, gênero, ano). A **data de inclusão** é registrada automaticamente. O sistema já vem com um **acervo inicial de 50 livros** (25 brasileiros e 25 estrangeiros) |
+| RF01 | Cadastrar, editar e excluir livros (título, autor, gênero, ano, **quantidade de exemplares**). A **data de inclusão** é registrada automaticamente. O sistema já vem com um **acervo inicial de 50 livros** (25 brasileiros e 25 estrangeiros) |
 | RF02 | Cadastrar leitores (nome, turma/função, **e-mail principal e secundário**, **telefone principal e secundário**) |
 | RF03 | Gerar automaticamente um **número de cartão da biblioteca** para cada leitor cadastrado |
 | RF04 | Realizar empréstimo de um livro para um leitor |
@@ -80,7 +80,9 @@ O sistema tem **dois tipos de usuário**, cada um com permissões próprias:
 
 | Código | Regra |
 |---|---|
-| RN01 | Só livros **disponíveis** podem ser emprestados |
+| RN01 | Cada livro tem uma quantidade de **exemplares** (cópias físicas). Só é possível emprestar se houver exemplar disponível: com 3 exemplares de *1984*, até 3 leitores podem estar com ele ao mesmo tempo |
+| RN10 | Um leitor não pode pegar **dois exemplares do mesmo livro** ao mesmo tempo |
+| RN11 | O total de exemplares não pode ser reduzido para menos do que os emprestados no momento |
 | RN02 | Prazo de devolução: **7 dias** após o empréstimo |
 | RN03 | Cada leitor pode ter no máximo **3 livros** ao mesmo tempo |
 | RN04 | Leitor com livro **atrasado** não pode pegar outro até devolvê-lo |
