@@ -20,9 +20,11 @@ O **ReadEtec** resolve esses problemas centralizando o cadastro de livros e leit
 
 ## B. Público-alvo
 
-**Usuário principal: o bibliotecário.** É ele quem opera o sistema: cadastra livros e leitores, registra empréstimos e devoluções e consulta o acervo.
+O sistema tem **dois tipos de usuário**, cada um com permissões próprias:
 
-**Beneficiados indiretos: os leitores** (alunos, professores e funcionários da Etec). Eles não acessam o sistema nesta versão, mas recebem do bibliotecário um **número de cartão da biblioteca** (credencial digital), que os identifica nos empréstimos.
+**Administrador: o bibliotecário.** Entra com o usuário `admin`. Gerencia o acervo, cadastra, edita e exclui leitores, registra empréstimos e devoluções e acompanha as notificações.
+
+**Leitor:** alunos, professores e funcionários da Etec. **Cria a própria conta** com e-mail e senha e recebe automaticamente um **número de cartão da biblioteca** (credencial digital), que o identifica nos empréstimos. Pela sua área, ele pesquisa o acervo, acompanha os seus empréstimos, edita o seu perfil e as suas preferências e lê os avisos recebidos. O leitor **não** registra empréstimos: isso é feito pelo bibliotecário no balcão, na entrega do livro físico.
 
 ## C. Requisitos
 
@@ -41,6 +43,10 @@ O **ReadEtec** resolve esses problemas centralizando o cadastro de livros e leit
 | RF07 | Registrar a devolução de um livro |
 | RF08 | Consultar os livros disponíveis |
 | RF09 | Pesquisar livros por título ou autor |
+| RF18 | **Login** de administrador (usuário e senha fixos) e de leitor (e-mail e senha) |
+| RF19 | **Criação de conta** pelo próprio leitor, sem permitir e-mail repetido |
+| RF20 | **Controle de acesso:** cada página só abre para o tipo de usuário certo; botão "Sair" |
+| RF21 | **Área do leitor:** pesquisar o acervo, ver os seus empréstimos, editar o perfil e ver os seus avisos |
 
 **Desejáveis (se der tempo):**
 
@@ -64,6 +70,7 @@ O **ReadEtec** resolve esses problemas centralizando o cadastro de livros e leit
 - Multa por dano ao livro
 - Acesso dos leitores ao sistema (login próprio)
 - Banco de dados em servidor, para os dados serem compartilhados entre computadores
+- Login seguro: nesta versão o login é simbólico (a senha do admin está no código e as senhas ficam no navegador). Um sistema real precisaria de um servidor com senhas criptografadas
 
 ### Requisitos não funcionais (como o sistema deve ser)
 
