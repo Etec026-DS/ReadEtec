@@ -82,6 +82,24 @@ formLivro.addEventListener("submit", function (evento) {
     exemplares: Number(campoExemplares.value),
   };
 
+  if (estaEmBranco(dados.titulo) || estaEmBranco(dados.autor)) {
+    alert("Preencha o título e o autor (não vale só espaços).");
+    return;
+  }
+
+  // Não deixa cadastrar o MESMO livro duas vezes (mesmo título e autor,
+  // ignorando maiúsculas e acentos): o certo é aumentar os exemplares
+  const duplicado = livros.find(function (l) {
+    return l.id !== campoId.value &&
+      normalizarTexto(l.titulo) === normalizarTexto(dados.titulo) &&
+      normalizarTexto(l.autor) === normalizarTexto(dados.autor);
+  });
+  if (duplicado) {
+    alert(`"${duplicado.titulo}", de ${duplicado.autor}, já está no acervo. ` +
+      "Para ter mais cópias, edite o livro e aumente a quantidade de exemplares.");
+    return;
+  }
+
   // Não dá para ter menos exemplares do que os que estão emprestados agora
   // (ex.: 3 leitores com 1984 -> a biblioteca tem pelo menos 3 exemplares)
   if (campoId.value !== "") {

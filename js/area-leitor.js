@@ -15,6 +15,17 @@ function leitorAtual() {
   return sessaoLeitor ? buscarLeitorPorId(sessaoLeitor.leitorId) : null;
 }
 
+// Se o admin excluiu a conta (ou o próprio leitor excluiu em outra aba)
+// enquanto esta página estava aberta, sai do sistema em vez de dar erro
+function garantirSessaoValida() {
+  if (leitorAtual()) {
+    return true;
+  }
+  alert("Sua sessão não é mais válida: esta conta não existe mais.");
+  encerrarSessao();
+  return false;
+}
+
 // Mostra/esconde uma mensagem num parágrafo
 function mensagem(idParagrafo, texto) {
   const p = document.getElementById(idParagrafo);
@@ -75,7 +86,7 @@ function mostrarMeusEmprestimos() {
 
       return `
         <tr class="linha-${s.classe}">
-          <td>${escapar(emp.livroTitulo)}</td>
+          <td>${escapar(tituloDoLivro(emp))}</td>
           <td>${formatarData(emp.emprestadoEm)}</td>
           <td>${formatarData(emp.devolverAte)}</td>
           <td><span class="etiqueta situacao-${s.classe}">${s.texto}</span>${respostaPedido}</td>
@@ -104,7 +115,7 @@ function mostrarMeusEmprestimos() {
       }
       return `
         <tr>
-          <td>${escapar(emp.livroTitulo)}</td>
+          <td>${escapar(tituloDoLivro(emp))}</td>
           <td>${formatarData(emp.emprestadoEm)}</td>
           <td>${formatarData(emp.devolvidoEm)}</td>
           <td>${situacao}</td>
@@ -139,10 +150,11 @@ function atualizarNovaDataPedido() {
 }
 
 function abrirPedidoPrazo(id) {
+  if (!garantirSessaoValida()) return;
   emprestimoDoPedido = meusEmprestimos().find(function (e) {
     return e.id === id;
   });
-  document.getElementById("prazo-livro").textContent = emprestimoDoPedido.livroTitulo;
+  document.getElementById("prazo-livro").textContent = tituloDoLivro(emprestimoDoPedido);
   document.getElementById("prazo-atual").textContent = formatarData(emprestimoDoPedido.devolverAte);
   document.getElementById("form-prazo").reset();
   atualizarNovaDataPedido();
@@ -161,6 +173,7 @@ document.getElementById("prazo-cancelar").addEventListener("click", fecharPedido
 
 document.getElementById("form-prazo").addEventListener("submit", function (evento) {
   evento.preventDefault();
+  if (!garantirSessaoValida()) return;
 
   const emprestimos = carregar("emprestimos");
   const emp = emprestimos.find(function (e) {
@@ -211,6 +224,7 @@ function preencherPerfil() {
 
 document.getElementById("form-perfil").addEventListener("submit", function (evento) {
   evento.preventDefault();
+  if (!garantirSessaoValida()) return;
   mensagem("perfil-erro", "");
   mensagem("perfil-ok", "");
 
@@ -218,6 +232,10 @@ document.getElementById("form-perfil").addEventListener("submit", function (even
   const email1 = document.getElementById("perfil-email1").value.trim().toLowerCase();
   const email2 = document.getElementById("perfil-email2").value.trim().toLowerCase();
 
+  if (estaEmBranco(document.getElementById("perfil-nome").value)) {
+    mensagem("perfil-erro", "Preencha o nome (não vale só espaços).");
+    return;
+  }
   if (email1 === email2) {
     mensagem("perfil-erro", "O e-mail secundário deve ser diferente do principal.");
     return;
@@ -253,6 +271,7 @@ document.getElementById("form-perfil").addEventListener("submit", function (even
 // ---------- Alterar senha ----------
 document.getElementById("form-senha").addEventListener("submit", function (evento) {
   evento.preventDefault();
+  if (!garantirSessaoValida()) return;
   mensagem("senha-erro", "");
   mensagem("senha-ok", "");
 
@@ -303,6 +322,7 @@ function atualizarBloqueioExclusao() {
 
 document.getElementById("form-excluir").addEventListener("submit", function (evento) {
   evento.preventDefault();
+  if (!garantirSessaoValida()) return;
   mensagem("excluir-erro", "");
 
   // Confere de novo na hora (as pendências podem ter mudado)
@@ -402,6 +422,7 @@ if (leitorAtual()) {
 
   // Atualiza cada aba quando ela é aberta
   document.addEventListener("abaAberta", function (evento) {
+    if (!garantirSessaoValida()) return;
     if (evento.detail === "acervo") pesquisaLeitor.atualizar();
     if (evento.detail === "meus-emprestimos") mostrarMeusEmprestimos();
     if (evento.detail === "perfil") {

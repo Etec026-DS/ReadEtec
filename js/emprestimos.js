@@ -96,7 +96,7 @@ function mostrarEmprestimos() {
       }
       return `
         <tr class="linha-${s.classe}">
-          <td>${escapar(emp.livroTitulo)}</td>
+          <td>${escapar(tituloDoLivro(emp))}</td>
           <td>${escapar(nomeDoLeitor(emp))}<br><small>${emp.leitorCartao}</small></td>
           <td>${formatarData(emp.emprestadoEm)}</td>
           <td>${formatarData(emp.devolverAte)}</td>
@@ -133,7 +133,7 @@ function mostrarEmprestimos() {
       }
       return `
         <tr>
-          <td>${escapar(emp.livroTitulo)}</td>
+          <td>${escapar(tituloDoLivro(emp))}</td>
           <td>${escapar(nomeDoLeitor(emp))}<br><small>${emp.leitorCartao}</small></td>
           <td>${formatarData(emp.emprestadoEm)}</td>
           <td>${formatarData(emp.devolvidoEm)}</td>
@@ -164,7 +164,7 @@ function mostrarSolicitacoes() {
       const novaData = somarDias(new Date(emp.devolverAte), sol.dias);
       return `
         <tr>
-          <td>${escapar(emp.livroTitulo)}</td>
+          <td>${escapar(tituloDoLivro(emp))}</td>
           <td>${escapar(nomeDoLeitor(emp))}<br><small>${emp.leitorCartao}</small></td>
           <td>${formatarData(emp.devolverAte)} → <strong>${formatarData(novaData)}</strong>
               <br><small>+${sol.dias} dia(s)</small></td>
@@ -191,7 +191,15 @@ function responderSolicitacao(id, aceitar) {
   const emp = emprestimos.find(function (e) {
     return e.id === id;
   });
-  const sol = emp.solicitacao;
+  const sol = emp ? emp.solicitacao : null;
+
+  // Proteção contra clique duplo ou duas abas abertas: só responde se o
+  // pedido AINDA estiver pendente (senão o prazo seria estendido duas vezes)
+  if (!sol || sol.status !== "pendente" || emp.devolvidoEm !== null) {
+    mensagemEmp("erro", "Este pedido já foi respondido ou o livro já foi devolvido.");
+    atualizarAbaEmprestimos();
+    return;
+  }
 
   if (aceitar) {
     emp.devolverAte = somarDias(new Date(emp.devolverAte), sol.dias).toISOString();
@@ -203,13 +211,13 @@ function responderSolicitacao(id, aceitar) {
   // Avisa o leitor (aparece em "Meus avisos" e, no futuro, por e-mail)
   if (aceitar) {
     registrarEmail(emp.leitorId, "prazo",
-      `Pedido de prazo aceito: ${emp.livroTitulo}`,
-      `Olá, ${nomeDoLeitor(emp)}! Seu pedido de mais ${sol.dias} dia(s) para devolver "${emp.livroTitulo}" foi ACEITO. ` +
+      `Pedido de prazo aceito: ${tituloDoLivro(emp)}`,
+      `Olá, ${nomeDoLeitor(emp)}! Seu pedido de mais ${sol.dias} dia(s) para devolver "${tituloDoLivro(emp)}" foi ACEITO. ` +
       `A nova data de devolução é ${formatarData(emp.devolverAte)}.`);
   } else {
     registrarEmail(emp.leitorId, "prazo",
-      `Pedido de prazo recusado: ${emp.livroTitulo}`,
-      `Olá, ${nomeDoLeitor(emp)}. Seu pedido de mais prazo para "${emp.livroTitulo}" foi RECUSADO. ` +
+      `Pedido de prazo recusado: ${tituloDoLivro(emp)}`,
+      `Olá, ${nomeDoLeitor(emp)}. Seu pedido de mais prazo para "${tituloDoLivro(emp)}" foi RECUSADO. ` +
       `A data de devolução continua sendo ${formatarData(emp.devolverAte)}.`);
   }
 
@@ -318,9 +326,17 @@ function devolverLivro(id) {
   const emp = emprestimos.find(function (e) {
     return e.id === id;
   });
+
+  // Proteção contra devolver duas vezes (clique duplo ou outra aba aberta):
+  // a segunda vez apagaria a data real da devolução e recalcularia a multa
+  if (!emp || emp.devolvidoEm !== null) {
+    mensagemEmp("erro", "Este empréstimo já foi devolvido.");
+    atualizarAbaEmprestimos();
+    return;
+  }
   const s = situacaoEmprestimo(emp);
 
-  let pergunta = `Confirmar a devolução de "${emp.livroTitulo}" por ${nomeDoLeitor(emp)}?`;
+  let pergunta = `Confirmar a devolução de "${tituloDoLivro(emp)}" por ${nomeDoLeitor(emp)}?`;
   if (s.multa > 0) {
     pergunta += `\n\n⚠️ ${s.diasAtraso} dia(s) de atraso: multa de ${formatarDinheiro(s.multa)}.`;
   }
@@ -339,7 +355,7 @@ function devolverLivro(id) {
   }
   salvar("emprestimos", emprestimos);
 
-  mensagemEmp("ok", `Devolução de "${emp.livroTitulo}" registrada.`);
+  mensagemEmp("ok", `Devolução de "${tituloDoLivro(emp)}" registrada.`);
   atualizarAbaEmprestimos();
 }
 

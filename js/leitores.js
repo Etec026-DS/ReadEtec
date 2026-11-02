@@ -91,6 +91,17 @@ formLeitor.addEventListener("submit", function (evento) {
   const email2 = campoLeitorEmail2.value.trim().toLowerCase();
 
   // ---------- Validações ----------
+  if (estaEmBranco(campoLeitorNome.value)) {
+    mostrarErroLeitor("Preencha o nome (não vale só espaços).");
+    return;
+  }
+  // Se o leitor foi excluído (em outra aba) enquanto era editado aqui
+  if (id !== "" && !buscarLeitorPorId(id)) {
+    mostrarErroLeitor("Este leitor não existe mais.");
+    limparFormLeitor();
+    mostrarLeitores();
+    return;
+  }
   if (email1 === email2) {
     mostrarErroLeitor("O e-mail secundário deve ser diferente do principal.");
     return;
@@ -175,6 +186,10 @@ function excluirLeitor(id) {
     return l.id !== id;
   });
   salvar("leitores", leitores);
+  // Apaga também os e-mails/avisos do leitor (dados pessoais que não servem mais)
+  salvar("emails", carregar("emails").filter(function (e) {
+    return e.leitorId !== id;
+  }));
 
   if (campoLeitorId.value === id) {
     limparFormLeitor();

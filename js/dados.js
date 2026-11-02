@@ -44,10 +44,19 @@ function gerarId() {
 
 // Protege o HTML: se alguém digitar <script> no título de um livro, isso vira
 // texto comum em vez de ser executado como código. (Segurança: evita XSS.)
+// Também troca as aspas, porque alguns textos vão DENTRO de atributos
+// (ex.: <option value="...">). Sem isso, um autor chamado  x" onclick="...
+// fecharia as aspas do atributo e injetaria código.
 function escapar(texto) {
   const div = document.createElement("div");
   div.textContent = texto ?? "";
-  return div.innerHTML;
+  return div.innerHTML.replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+
+// Diz se um texto está vazio ou tem só espaços.
+// (O "required" do HTML aceita "   ", então conferimos também no JavaScript.)
+function estaEmBranco(texto) {
+  return (texto || "").trim() === "";
 }
 
 // Deixa um texto "comparável": tudo minúsculo e sem acentos.
@@ -255,6 +264,14 @@ function situacaoEmprestimo(emp) {
 function nomeDoLeitor(emp) {
   const leitor = buscarLeitorPorId(emp.leitorId);
   return leitor ? leitor.nome : emp.leitorNome;
+}
+
+// Mesma ideia para o livro: título ATUAL (se foi editado) ou a cópia guardada
+function tituloDoLivro(emp) {
+  const livro = carregar("livros").find(function (l) {
+    return l.id === emp.livroId;
+  });
+  return livro ? livro.titulo : emp.livroTitulo;
 }
 
 // Empréstimos ainda não devolvidos de um leitor

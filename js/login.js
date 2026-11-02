@@ -54,6 +54,10 @@ document.getElementById("form-criar").addEventListener("submit", function (event
   const confirmar = document.getElementById("criar-confirmar").value;
 
   // Validações que o próprio HTML não faz sozinho
+  if (estaEmBranco(document.getElementById("criar-nome").value)) {
+    mostrarErro("criar-erro", "Preencha o nome (não vale só espaços).");
+    return;
+  }
   if (senha !== confirmar) {
     mostrarErro("criar-erro", "As senhas não são iguais.");
     return;
