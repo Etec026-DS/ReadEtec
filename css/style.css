@@ -1,15 +1,44 @@
-/* ===== Cores e medidas usadas no site inteiro ===== */
+/* ===== Cores e medidas usadas no site inteiro =====
+   O site inteiro usa estas "variáveis" de cor. Para trocar de tema,
+   basta trocar os valores delas, sem mexer no resto do CSS. */
+
+/* Tema CLARO */
 :root {
+  color-scheme: light; /* avisa o navegador para desenhar campos e barras de rolagem claros */
   --cor-principal: #2563eb;
   --cor-principal-escura: #1d4ed8;
+  --cor-topo: #2563eb;
   --cor-fundo: #f1f5f9;
   --cor-cartao: #ffffff;
+  --cor-campo: #ffffff;
   --cor-texto: #1e293b;
   --cor-texto-suave: #64748b;
   --cor-borda: #e2e8f0;
   --cor-verde: #16a34a;
+  --cor-verde-fundo: #dcfce7;
   --cor-vermelho: #dc2626;
+  --cor-vermelho-fundo: #fee2e2;
+  --sombra: 0 1px 3px rgba(0, 0, 0, 0.08);
   --raio: 8px;
+}
+
+/* Tema ESCURO: vale quando o <html> tem data-tema="escuro" (ver js/tema.js) */
+:root[data-tema="escuro"] {
+  color-scheme: dark;
+  --cor-principal: #3b82f6;
+  --cor-principal-escura: #2563eb;
+  --cor-topo: #1e293b;
+  --cor-fundo: #0f172a;
+  --cor-cartao: #1e293b;
+  --cor-campo: #0f172a;
+  --cor-texto: #e2e8f0;
+  --cor-texto-suave: #94a3b8;
+  --cor-borda: #334155;
+  --cor-verde: #4ade80;
+  --cor-verde-fundo: rgba(74, 222, 128, 0.15);
+  --cor-vermelho: #f87171;
+  --cor-vermelho-fundo: rgba(248, 113, 113, 0.15);
+  --sombra: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
 * {
@@ -25,14 +54,33 @@ body {
 
 /* ===== Cabeçalho e abas ===== */
 .topo {
-  background: var(--cor-principal);
+  background: var(--cor-topo);
   color: white;
   padding: 16px 16px 0;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+/* Linha de cima: nome do sistema à esquerda, botão de tema à direita */
+.topo-linha {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
 }
 
 .topo h1 {
-  margin: 0 0 12px;
+  margin: 0;
   font-size: 1.6rem;
+}
+
+#botao-tema {
+  background: rgba(255, 255, 255, 0.15);
+  font-size: 1.2rem;
+  padding: 6px 12px;
+}
+
+#botao-tema:hover {
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .abas {
@@ -83,7 +131,7 @@ main {
   border-radius: var(--raio);
   padding: 16px 20px;
   margin-bottom: 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--sombra);
   overflow-x: auto; /* tabelas largas rolam dentro do cartão */
 }
 
@@ -114,6 +162,7 @@ select {
   border-radius: var(--raio);
   font-size: 1rem;
   color: var(--cor-texto);
+  background: var(--cor-campo);
 }
 
 input:focus,
@@ -193,11 +242,11 @@ th {
 }
 
 .etiqueta.disponivel {
-  background: #dcfce7;
+  background: var(--cor-verde-fundo);
   color: var(--cor-verde);
 }
 
 .etiqueta.emprestado {
-  background: #fee2e2;
+  background: var(--cor-vermelho-fundo);
   color: var(--cor-vermelho);
 }

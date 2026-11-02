@@ -5,12 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ReadEtec - Biblioteca</title>
   <link rel="stylesheet" href="css/style.css">
+
+  <!-- Aplica o tema ANTES de a página aparecer, para não "piscar" branco.
+       Usa o tema salvo; se não houver, segue o tema do sistema operacional. -->
+  <script>
+    (function () {
+      let tema = null;
+      try { tema = localStorage.getItem("tema"); } catch (e) {}
+      if (!tema) {
+        tema = window.matchMedia("(prefers-color-scheme: dark)").matches ? "escuro" : "claro";
+      }
+      document.documentElement.dataset.tema = tema;
+    })();
+  </script>
 </head>
 <body>
 
   <!-- Cabeçalho com o nome do sistema e o menu de abas -->
   <header class="topo">
-    <h1>📚 ReadEtec</h1>
+    <div class="topo-linha">
+      <h1>📚 ReadEtec</h1>
+      <button id="botao-tema" title="Alternar tema claro/escuro">🌙</button>
+    </div>
     <nav class="abas">
       <button class="aba ativa" data-aba="livros">Livros</button>
       <button class="aba" data-aba="leitores">Leitores</button>
@@ -95,6 +111,7 @@
   <!-- A ordem importa: dados.js primeiro, porque os outros usam as funções dele -->
   <script src="js/dados.js"></script>
   <script src="js/acervo-inicial.js"></script>
+  <script src="js/tema.js"></script>
   <script src="js/abas.js"></script>
   <script src="js/livros.js"></script>
 </body>
