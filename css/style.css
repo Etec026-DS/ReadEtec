@@ -525,3 +525,60 @@ button.filtro.ativo {
   color: var(--cor-texto-suave);
   font-size: 0.9rem;
 }
+
+/* ===== Empréstimos ===== */
+:root {
+  --cor-alerta: #b45309;
+  --cor-alerta-fundo: #fef3c7;
+}
+
+:root[data-tema="escuro"] {
+  --cor-alerta: #fbbf24;
+  --cor-alerta-fundo: rgba(251, 191, 36, 0.15);
+}
+
+.etiqueta.situacao-ok {
+  background: var(--cor-verde-fundo);
+  color: var(--cor-verde);
+}
+
+.etiqueta.situacao-alerta {
+  background: var(--cor-alerta-fundo);
+  color: var(--cor-alerta);
+}
+
+.etiqueta.situacao-atraso {
+  background: var(--cor-vermelho-fundo);
+  color: var(--cor-vermelho);
+}
+
+/* Linha atrasada com uma faixa vermelha à esquerda */
+tr.linha-atraso td:first-child {
+  box-shadow: inset 4px 0 0 var(--cor-vermelho);
+}
+
+tr.linha-alerta td:first-child {
+  box-shadow: inset 4px 0 0 var(--cor-alerta);
+}
+
+.resumo-emprestimos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin-bottom: 12px;
+  color: var(--cor-texto-suave);
+}
+
+.resumo-emprestimos strong {
+  color: var(--cor-texto);
+}
+
+.texto-atraso,
+.texto-atraso strong {
+  color: var(--cor-vermelho);
+}
+
+input[readonly] {
+  background: var(--cor-fundo);
+  color: var(--cor-texto-suave);
+}

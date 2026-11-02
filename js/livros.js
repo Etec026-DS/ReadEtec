@@ -142,6 +142,14 @@ function excluirLivro(id) {
 
 botaoLimparLivro.addEventListener("click", limparFormLivro);
 
+// Ao voltar para a aba Livros, redesenha a tabela: a situação
+// (Disponível/Emprestado) pode ter mudado na aba Empréstimos
+document.addEventListener("abaAberta", function (evento) {
+  if (evento.detail === "livros") {
+    mostrarLivros();
+  }
+});
+
 // Ao abrir a página: coloca os livros de exemplo (só na 1ª vez),
 // monta o select de gêneros e desenha a tabela
 carregarAcervoInicial();

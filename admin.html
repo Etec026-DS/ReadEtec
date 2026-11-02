@@ -163,8 +163,71 @@
       </div>
     </section>
 
+    <!-- ============ ABA EMPRÉSTIMOS ============ -->
     <section id="emprestimos" class="conteudo-aba">
-      <div class="cartao"><p class="vazio">🚧 Em construção</p></div>
+      <div class="cartao">
+        <h2>Novo empréstimo</h2>
+        <form id="form-emprestimo">
+          <div class="grade">
+            <label>Leitor *
+              <select id="emp-leitor" required></select>
+            </label>
+            <label>Livro * (só aparecem os disponíveis)
+              <select id="emp-livro" required></select>
+            </label>
+            <label>Data do empréstimo
+              <input type="date" id="emp-data" required>
+            </label>
+            <label>Devolver até (automático: + 7 dias)
+              <input type="text" id="emp-devolver" readonly>
+            </label>
+          </div>
+
+          <p id="emp-erro" class="mensagem erro" hidden></p>
+          <p id="emp-ok" class="mensagem sucesso" hidden></p>
+
+          <div class="botoes">
+            <button type="submit">Emprestar</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="cartao">
+        <h2>Empréstimos em aberto</h2>
+        <div class="resumo-emprestimos" id="emp-resumo"></div>
+        <table>
+          <thead>
+            <tr>
+              <th>Livro</th>
+              <th>Leitor</th>
+              <th>Emprestado em</th>
+              <th>Devolver até</th>
+              <th>Situação</th>
+              <th>Multa</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="tabela-emp-abertos"></tbody>
+        </table>
+        <p id="emp-abertos-vazio" class="vazio">Nenhum empréstimo em aberto.</p>
+      </div>
+
+      <div class="cartao">
+        <h2>Histórico de devoluções</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Livro</th>
+              <th>Leitor</th>
+              <th>Emprestado em</th>
+              <th>Devolvido em</th>
+              <th>Situação</th>
+            </tr>
+          </thead>
+          <tbody id="tabela-emp-historico"></tbody>
+        </table>
+        <p id="emp-historico-vazio" class="vazio">Nenhuma devolução registrada.</p>
+      </div>
     </section>
 
     <!-- ============ ABA PESQUISA ============ -->
@@ -185,6 +248,7 @@
   <script src="js/mostrar-senha.js"></script>
   <script src="js/preferencias.js"></script>
   <script src="js/leitores.js"></script>
+  <script src="js/emprestimos.js"></script>
   <script src="js/pesquisa.js"></script>
   <script>
     // Monta a pesquisa na aba e atualiza sempre que a aba for aberta

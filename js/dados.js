@@ -175,6 +175,85 @@ function criarLeitor(dados) {
   return leitor;
 }
 
+// ---------------------------------------------------------------------
+// EMPRÉSTIMOS
+// Cada empréstimo é um objeto assim:
+//   { id, livroId, leitorId,
+//     livroTitulo, leitorNome, leitorCartao,  <- cópia, para o histórico
+//     emprestadoEm, devolverAte, devolvidoEm } <- devolvidoEm = null enquanto não devolver
+// ---------------------------------------------------------------------
+
+const PRAZO_DIAS = 7; // RF06: prazo de devolução
+const MULTA_POR_DIA = 1.0; // RF12: R$ 1,00 por dia de atraso
+const MAX_EMPRESTIMOS_POR_LEITOR = 3;
+
+// Converte "2026-11-02" (valor de um <input type="date">) numa data local.
+// (new Date("2026-11-02") seria meia-noite em Londres, e no Brasil viraria o dia 01!)
+function dataDoCampo(valor) {
+  const [ano, mes, dia] = valor.split("-").map(Number);
+  return new Date(ano, mes - 1, dia);
+}
+
+// Data de hoje no formato do <input type="date">: "2026-11-02"
+function hojeParaCampo() {
+  const d = new Date();
+  return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" +
+    String(d.getDate()).padStart(2, "0");
+}
+
+// Soma dias a uma data
+function somarDias(data, dias) {
+  const nova = new Date(data);
+  nova.setDate(nova.getDate() + dias);
+  return nova;
+}
+
+// Quantos dias faltam de "hoje" até "data" (negativo = já passou).
+// Zeramos as horas para contar só os dias do calendário.
+function diasAte(data) {
+  const umDia = 24 * 60 * 60 * 1000;
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+  const alvo = new Date(data);
+  alvo.setHours(0, 0, 0, 0);
+  return Math.round((alvo - hoje) / umDia);
+}
+
+function formatarDinheiro(valor) {
+  return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
+// Diz a situação de um empréstimo EM ABERTO:
+//   { texto: "Vence em 2 dias", classe: "alerta", diasAtraso: 0, multa: 0 }
+// classe: "ok" (no prazo), "alerta" (vence em até 2 dias) ou "atraso"
+function situacaoEmprestimo(emp) {
+  const dias = diasAte(emp.devolverAte);
+
+  if (dias < 0) {
+    const atraso = -dias;
+    return {
+      texto: "Atrasado há " + atraso + (atraso === 1 ? " dia" : " dias"),
+      classe: "atraso",
+      diasAtraso: atraso,
+      multa: atraso * MULTA_POR_DIA,
+    };
+  }
+  if (dias === 0) {
+    return { texto: "Vence hoje", classe: "alerta", diasAtraso: 0, multa: 0 };
+  }
+  if (dias <= 2) {
+    return { texto: "Vence em " + dias + (dias === 1 ? " dia" : " dias"), classe: "alerta", diasAtraso: 0, multa: 0 };
+  }
+  return { texto: "No prazo", classe: "ok", diasAtraso: 0, multa: 0 };
+}
+
+// Empréstimos ainda não devolvidos de um leitor
+function emprestimosAbertosDoLeitor(leitorId) {
+  return carregar("emprestimos").filter(function (emp) {
+    return emp.leitorId === leitorId && emp.devolvidoEm === null;
+  });
+}
+
 // Diz se um leitor está com algum livro emprestado (ainda não devolvido)
 function leitorTemEmprestimoAberto(leitorId) {
   return carregar("emprestimos").some(function (emp) {
