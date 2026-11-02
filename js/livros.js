@@ -13,6 +13,7 @@ const campoTitulo = document.getElementById("livro-titulo");
 const campoAutor = document.getElementById("livro-autor");
 const campoGenero = document.getElementById("livro-genero");
 const campoAno = document.getElementById("livro-ano");
+const campoExemplares = document.getElementById("livro-exemplares");
 const botaoLimparLivro = document.getElementById("livro-limpar");
 const tituloFormLivro = document.getElementById("titulo-form-livro");
 const tabelaLivros = document.getElementById("tabela-livros");
@@ -38,11 +39,6 @@ function mostrarLivros() {
   tabelaLivros.innerHTML = "";
 
   livros.forEach(function (livro) {
-    const emprestado = livroEstaEmprestado(livro.id);
-    const etiqueta = emprestado
-      ? '<span class="etiqueta emprestado">Emprestado</span>'
-      : '<span class="etiqueta disponivel">Disponível</span>';
-
     tabelaLivros.innerHTML += `
       <tr>
         <td>${escapar(livro.titulo)}</td>
@@ -50,7 +46,8 @@ function mostrarLivros() {
         <td>${escapar(livro.genero)}</td>
         <td>${livro.ano || "-"}</td>
         <td>${formatarData(livro.criadoEm)}</td>
-        <td>${etiqueta}</td>
+        <td>${totalExemplares(livro)}</td>
+        <td>${etiquetaDisponibilidade(livro)}</td>
         <td>
           <button class="icone" title="Editar" onclick="editarLivro('${livro.id}')">✏️</button>
           <button class="icone" title="Excluir" onclick="excluirLivro('${livro.id}')">🗑️</button>
@@ -66,6 +63,7 @@ function mostrarLivros() {
 function limparFormLivro() {
   formLivro.reset();
   campoId.value = "";
+  campoExemplares.min = 1;
   tituloFormLivro.textContent = "Cadastrar livro";
 }
 
@@ -81,7 +79,18 @@ formLivro.addEventListener("submit", function (evento) {
     autor: campoAutor.value.trim(),
     genero: campoGenero.value,
     ano: campoAno.value ? Number(campoAno.value) : null,
+    exemplares: Number(campoExemplares.value),
   };
+
+  // Não dá para ter menos exemplares do que os que estão emprestados agora
+  // (ex.: 3 leitores com 1984 -> a biblioteca tem pelo menos 3 exemplares)
+  if (campoId.value !== "") {
+    const emprestados = exemplaresEmprestados(campoId.value);
+    if (dados.exemplares < emprestados) {
+      alert(`Há ${emprestados} exemplar(es) emprestado(s) agora. O total não pode ser menor que isso.`);
+      return;
+    }
+  }
 
   if (campoId.value === "") {
     // NOVO livro: cria um id e adiciona na lista
@@ -112,6 +121,9 @@ function editarLivro(id) {
   campoAutor.value = livro.autor;
   campoGenero.value = livro.genero;
   campoAno.value = livro.ano || "";
+  campoExemplares.value = totalExemplares(livro);
+  // O navegador já avisa se tentar diminuir abaixo dos emprestados
+  campoExemplares.min = Math.max(1, exemplaresEmprestados(livro.id));
 
   tituloFormLivro.textContent = "Editar livro";
   campoTitulo.focus();
@@ -120,7 +132,7 @@ function editarLivro(id) {
 // Exclui um livro, mas não deixa excluir se ele estiver emprestado
 function excluirLivro(id) {
   if (livroEstaEmprestado(id)) {
-    alert("Este livro está emprestado e não pode ser excluído. Registre a devolução primeiro.");
+    alert(`Há ${exemplaresEmprestados(id)} exemplar(es) deste livro emprestado(s). Registre as devoluções antes de excluir.`);
     return;
   }
 

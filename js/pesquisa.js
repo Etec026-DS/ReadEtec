@@ -103,7 +103,7 @@ function criarPesquisa(caixa) {
       .filter(function (livro) {
         if (!livroCombina(livro, palavras)) return false;
         if (generosEscolhidos.size > 0 && !generosEscolhidos.has(livro.genero)) return false;
-        if (soDisponiveis && livroEstaEmprestado(livro.id)) return false;
+        if (soDisponiveis && exemplaresDisponiveis(livro) <= 0) return false;
         return true;
       })
       .sort(function (a, b) {
@@ -112,16 +112,13 @@ function criarPesquisa(caixa) {
 
     tabela.innerHTML = encontrados
       .map(function (livro) {
-        const etiqueta = livroEstaEmprestado(livro.id)
-          ? '<span class="etiqueta emprestado">Emprestado</span>'
-          : '<span class="etiqueta disponivel">Disponível</span>';
         return `
           <tr>
             <td>${escapar(livro.titulo)}</td>
             <td>${escapar(livro.autor)}</td>
             <td>${escapar(livro.genero)}</td>
             <td>${livro.ano || "-"}</td>
-            <td>${etiqueta}</td>
+            <td>${etiquetaDisponibilidade(livro)}</td>
           </tr>`;
       })
       .join("");

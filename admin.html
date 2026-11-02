@@ -58,6 +58,9 @@
             <label>Ano
               <input type="number" id="livro-ano" min="1000" max="2100">
             </label>
+            <label>Exemplares (cópias na biblioteca) *
+              <input type="number" id="livro-exemplares" min="1" max="99" value="1" required>
+            </label>
           </div>
 
           <div class="botoes">
@@ -77,6 +80,7 @@
               <th>Gênero</th>
               <th>Ano</th>
               <th>Inclusão</th>
+              <th>Exemplares</th>
               <th>Situação</th>
               <th>Ações</th>
             </tr>
@@ -191,7 +195,7 @@
             <label>Leitor *
               <select id="emp-leitor" required></select>
             </label>
-            <label>Livro * (só aparecem os disponíveis)
+            <label>Livro * (só aparecem os que têm exemplar disponível)
               <select id="emp-livro" required></select>
             </label>
             <label>Data do empréstimo

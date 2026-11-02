@@ -46,7 +46,7 @@ function preencherSelectLeitores() {
 function preencherSelectLivros() {
   const disponiveis = carregar("livros")
     .filter(function (livro) {
-      return !livroEstaEmprestado(livro.id);
+      return exemplaresDisponiveis(livro) > 0; // só livros com exemplar na estante
     })
     .sort(function (a, b) {
       return a.titulo.localeCompare(b.titulo);
@@ -55,7 +55,8 @@ function preencherSelectLivros() {
     '<option value="">Selecione o livro...</option>' +
     disponiveis
       .map(function (livro) {
-        return `<option value="${livro.id}">${escapar(livro.titulo)} (${escapar(livro.autor)})</option>`;
+        const disp = exemplaresDisponiveis(livro);
+        return `<option value="${livro.id}">${escapar(livro.titulo)} (${escapar(livro.autor)}) · ${disp} de ${totalExemplares(livro)} disp.</option>`;
       })
       .join("");
 }
@@ -250,17 +251,29 @@ formEmprestimo.addEventListener("submit", function (evento) {
   const dataEmprestimo = dataDoCampo(campoEmpData.value);
 
   // ---------- Validações ----------
+  if (!leitor || !livro) {
+    mensagemEmp("erro", "Selecione o leitor e o livro.");
+    return;
+  }
   if (dataEmprestimo > new Date()) {
     mensagemEmp("erro", "A data do empréstimo não pode estar no futuro.");
     return;
   }
-  // Conferimos de novo: o livro pode ter sido emprestado em outra aba do navegador
-  if (livroEstaEmprestado(livro.id)) {
-    mensagemEmp("erro", "Este livro já está emprestado.");
+  // Conferimos de novo: o último exemplar pode ter sido emprestado em outra aba
+  if (exemplaresDisponiveis(livro) <= 0) {
+    mensagemEmp("erro", "Todos os exemplares deste livro já estão emprestados.");
     atualizarAbaEmprestimos();
     return;
   }
   const abertos = emprestimosAbertosDoLeitor(leitor.id);
+  // A mesma pessoa não pega dois exemplares do mesmo livro
+  const jaTemEsteLivro = abertos.some(function (emp) {
+    return emp.livroId === livro.id;
+  });
+  if (jaTemEsteLivro) {
+    mensagemEmp("erro", leitor.nome + " já está com um exemplar de \"" + livro.titulo + "\".");
+    return;
+  }
   const temAtraso = abertos.some(function (emp) {
     return situacaoEmprestimo(emp).classe === "atraso";
   });

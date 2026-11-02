@@ -75,6 +75,7 @@ function formatarData(dataIso) {
 // exemplos não voltam se o bibliotecário excluir algum deles.
 function carregarAcervoInicial() {
   if (localStorage.getItem("acervoInicialCarregado") === "sim") {
+    atualizarExemplaresDoAcervo(); // navegadores que já tinham o acervo antigo
     return;
   }
 
@@ -101,12 +102,14 @@ function carregarAcervoInicial() {
       autor: exemplo.autor,
       genero: exemplo.genero,
       ano: exemplo.ano,
+      exemplares: exemplo.exemplares,
       criadoEm: dataInclusao.toISOString(),
     });
   });
 
   salvar("livros", livros);
   localStorage.setItem("acervoInicialCarregado", "sim");
+  localStorage.setItem("exemplaresAtualizados", "sim");
 }
 
 // ---------------------------------------------------------------------
@@ -332,12 +335,62 @@ function autoresDoAcervo() {
   });
 }
 
-// Diz se um livro está emprestado agora.
-// Por enquanto ainda não existem empréstimos, então a lista vem vazia.
-// Quando fizermos a aba Empréstimos, esta função já vai funcionar sozinha.
-function livroEstaEmprestado(livroId) {
-  const emprestimos = carregar("emprestimos");
-  return emprestimos.some(function (emp) {
+// ---------------------------------------------------------------------
+// EXEMPLARES
+// Cada livro tem "exemplares": quantas cópias físicas a biblioteca tem.
+// Exemplo: 1984 com 3 exemplares pode estar com 3 leitores ao mesmo tempo.
+//   disponíveis = exemplares - exemplares emprestados agora
+// ---------------------------------------------------------------------
+
+// Total de exemplares de um livro (livros antigos, sem o campo, contam como 1)
+function totalExemplares(livro) {
+  return livro.exemplares || 1;
+}
+
+// Quantos exemplares deste livro estão emprestados agora
+function exemplaresEmprestados(livroId) {
+  return carregar("emprestimos").filter(function (emp) {
     return emp.livroId === livroId && emp.devolvidoEm === null;
+  }).length;
+}
+
+// Quantos exemplares estão na estante, prontos para emprestar
+function exemplaresDisponiveis(livro) {
+  return totalExemplares(livro) - exemplaresEmprestados(livro.id);
+}
+
+// Diz se ALGUM exemplar do livro está emprestado (usado para bloquear a exclusão)
+function livroEstaEmprestado(livroId) {
+  return exemplaresEmprestados(livroId) > 0;
+}
+
+// Etiqueta de situação usada nas tabelas: "2 de 3 disponíveis" ou "Indisponível"
+function etiquetaDisponibilidade(livro) {
+  const total = totalExemplares(livro);
+  const disponiveis = exemplaresDisponiveis(livro);
+  if (disponiveis <= 0) {
+    return `<span class="etiqueta emprestado" title="Todos os ${total} exemplares estão emprestados">Indisponível (0 de ${total})</span>`;
+  }
+  return `<span class="etiqueta disponivel">${disponiveis} de ${total} disponíve${disponiveis === 1 ? "l" : "is"}</span>`;
+}
+
+// Para quem abriu o sistema ANTES de existirem exemplares: coloca as
+// quantidades do acervo inicial nos livros de exemplo que ainda não têm.
+// Roda uma única vez por navegador (marca "exemplaresAtualizados").
+function atualizarExemplaresDoAcervo() {
+  if (localStorage.getItem("exemplaresAtualizados") === "sim") {
+    return;
+  }
+  const livros = carregar("livros");
+  livros.forEach(function (livro) {
+    if (livro.exemplares) {
+      return;
+    }
+    const exemplo = ACERVO_INICIAL.find(function (e) {
+      return e.titulo.toLowerCase() === livro.titulo.toLowerCase();
+    });
+    livro.exemplares = exemplo ? exemplo.exemplares : 1;
   });
+  salvar("livros", livros);
+  localStorage.setItem("exemplaresAtualizados", "sim");
 }
