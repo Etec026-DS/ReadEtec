@@ -368,3 +368,117 @@ a {
 [hidden] {
   display: none !important;
 }
+
+/* ===== Botão de mostrar/esconder senha ===== */
+.campo-senha {
+  position: relative;
+  display: flex;
+}
+
+.campo-senha input {
+  flex: 1;
+  padding-right: 44px; /* espaço para o botão não ficar em cima do texto */
+}
+
+button.botao-olho {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  padding: 4px 8px;
+  font-size: 1rem;
+}
+
+button.botao-olho:hover {
+  background: var(--cor-borda);
+}
+
+/* ===== Preferências de leitura ===== */
+fieldset.preferencias {
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  margin: 16px 0 0;
+  padding: 8px 16px 16px;
+}
+
+fieldset.preferencias legend {
+  padding: 0 6px;
+  color: var(--cor-texto-suave);
+}
+
+.rotulo {
+  font-size: 0.9rem;
+  color: var(--cor-texto-suave);
+  margin: 12px 0 6px;
+}
+
+.grade-checks {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 6px;
+}
+
+label.check {
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  color: var(--cor-texto);
+  cursor: pointer;
+}
+
+input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  accent-color: var(--cor-principal);
+}
+
+.linha-autor {
+  display: flex;
+  gap: 8px;
+}
+
+.linha-autor input {
+  flex: 1;
+  min-width: 0;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--cor-fundo);
+  border: 1px solid var(--cor-borda);
+  border-radius: 999px;
+  padding: 2px 4px 2px 12px;
+  font-size: 0.9rem;
+}
+
+.chip button {
+  background: transparent;
+  color: var(--cor-texto-suave);
+  padding: 0 6px;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.chip button:hover {
+  background: var(--cor-borda);
+  color: var(--cor-vermelho);
+}
+
+td small {
+  color: var(--cor-texto-suave);
+}
+
+.cartao form .mensagem {
+  margin-top: 12px;
+}

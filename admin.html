@@ -86,8 +86,81 @@
     </section>
 
     <!-- ============ ABAS AINDA EM CONSTRUÇÃO ============ -->
+    <!-- ============ ABA LEITORES ============ -->
     <section id="leitores" class="conteudo-aba">
-      <div class="cartao"><p class="vazio">🚧 Em construção</p></div>
+      <div class="cartao">
+        <h2 id="titulo-form-leitor">Cadastrar leitor</h2>
+
+        <form id="form-leitor">
+          <input type="hidden" id="leitor-id">
+
+          <div class="grade">
+            <label>Nome completo *
+              <input type="text" id="leitor-nome" required>
+            </label>
+            <label>Turma ou função
+              <input type="text" id="leitor-turma" placeholder="Ex.: 2º DS, Professor">
+            </label>
+            <label>E-mail principal *
+              <input type="email" id="leitor-email1" required>
+            </label>
+            <label>E-mail secundário
+              <input type="email" id="leitor-email2">
+            </label>
+            <label>Telefone principal
+              <input type="tel" id="leitor-tel1" placeholder="(11) 99999-9999">
+            </label>
+            <label>Telefone secundário
+              <input type="tel" id="leitor-tel2">
+            </label>
+            <label><span id="rotulo-leitor-senha">Senha inicial * (mínimo 6)</span>
+              <input type="password" id="leitor-senha" minlength="6" autocomplete="new-password" required>
+            </label>
+          </div>
+
+          <fieldset class="preferencias">
+            <legend>Preferências de leitura</legend>
+
+            <p class="rotulo">Gêneros favoritos</p>
+            <div id="leitor-generos" class="grade-checks"></div>
+
+            <p class="rotulo">Autores favoritos</p>
+            <div class="linha-autor">
+              <input type="text" id="leitor-autor-input" list="leitor-lista-autores"
+                     placeholder="Digite um autor e clique em Adicionar">
+              <button type="button" id="leitor-autor-add" class="secundario">Adicionar</button>
+            </div>
+            <datalist id="leitor-lista-autores"></datalist>
+            <div id="leitor-autores" class="chips"></div>
+          </fieldset>
+
+          <p id="leitor-erro" class="mensagem erro" hidden></p>
+
+          <div class="botoes">
+            <button type="button" id="leitor-limpar" class="secundario">Limpar</button>
+            <button type="submit">Salvar</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="cartao">
+        <h2>Leitores cadastrados</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Cartão</th>
+              <th>Nome</th>
+              <th>Turma</th>
+              <th>E-mail</th>
+              <th>Telefone</th>
+              <th>Preferências</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tabela-leitores"></tbody>
+        </table>
+        <p id="leitores-vazio" class="vazio">Nenhum leitor cadastrado ainda.</p>
+      </div>
     </section>
 
     <section id="emprestimos" class="conteudo-aba">
@@ -109,5 +182,8 @@
   <script src="js/tema.js"></script>
   <script src="js/abas.js"></script>
   <script src="js/livros.js"></script>
+  <script src="js/mostrar-senha.js"></script>
+  <script src="js/preferencias.js"></script>
+  <script src="js/leitores.js"></script>
 </body>
 </html>

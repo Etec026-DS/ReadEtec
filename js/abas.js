@@ -23,5 +23,9 @@ botoesAba.forEach(function (botao) {
     // Ativa só o botão clicado e a seção correspondente
     botao.classList.add("ativa");
     document.getElementById(nomeAba).classList.add("ativa");
+
+    // Avisa as outras partes do código que uma aba foi aberta,
+    // para elas atualizarem o que mostram (ver leitores.js)
+    document.dispatchEvent(new CustomEvent("abaAberta", { detail: nomeAba }));
   });
 });

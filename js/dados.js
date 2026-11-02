@@ -163,6 +163,23 @@ function criarLeitor(dados) {
   return leitor;
 }
 
+// Diz se um leitor está com algum livro emprestado (ainda não devolvido)
+function leitorTemEmprestimoAberto(leitorId) {
+  return carregar("emprestimos").some(function (emp) {
+    return emp.leitorId === leitorId && emp.devolvidoEm === null;
+  });
+}
+
+// Lista de autores do acervo, sem repetir, em ordem alfabética
+function autoresDoAcervo() {
+  const nomes = carregar("livros").map(function (l) {
+    return l.autor;
+  });
+  return [...new Set(nomes)].sort(function (a, b) {
+    return a.localeCompare(b);
+  });
+}
+
 // Diz se um livro está emprestado agora.
 // Por enquanto ainda não existem empréstimos, então a lista vem vazia.
 // Quando fizermos a aba Empréstimos, esta função já vai funcionar sozinha.
