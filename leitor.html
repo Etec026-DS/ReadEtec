@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ReadEtec - Área do leitor</title>
+  <link rel="stylesheet" href="css/style.css">
+
+  <script src="js/tema-inicial.js"></script>
+  <script src="js/dados.js"></script>
+  <script src="js/sessao.js"></script>
+  <!-- O "porteiro": só entra quem estiver logado como leitor -->
+  <script>exigirSessao("leitor");</script>
+</head>
+<body>
+
+  <header class="topo">
+    <div class="topo-linha">
+      <h1>📚 ReadEtec</h1>
+      <div class="topo-acoes">
+        <span id="saudacao"></span>
+        <button id="botao-tema" title="Alternar tema claro/escuro">🌙</button>
+        <button class="botao-sair" onclick="encerrarSessao()">Sair</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="cartao">
+      <p class="vazio">🚧 Área do leitor em construção</p>
+    </div>
+  </main>
+
+  <script src="js/tema.js"></script>
+  <script>
+    // Mostra "Olá, Nome (RE-0001)" no topo
+    const sessao = sessaoAtual();
+    const leitorLogado = sessao ? buscarLeitorPorId(sessao.leitorId) : null;
+    if (leitorLogado) {
+      document.getElementById("saudacao").textContent =
+        "Olá, " + leitorLogado.nome.split(" ")[0] + " (" + leitorLogado.cartao + ")";
+    }
+  </script>
+</body>
+</html>

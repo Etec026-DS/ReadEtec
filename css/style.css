@@ -250,3 +250,121 @@ th {
   background: var(--cor-vermelho-fundo);
   color: var(--cor-vermelho);
 }
+
+/* ===== Topo: botões do lado direito (tema, sair) ===== */
+.topo h1 small {
+  font-size: 0.9rem;
+  font-weight: normal;
+  opacity: 0.8;
+  margin-left: 6px;
+}
+
+.topo-acoes {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.botao-sair {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.botao-sair:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* ===== Página de login ===== */
+.pagina-login {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.caixa-login {
+  width: 100%;
+  max-width: 420px;
+  padding: 16px;
+}
+
+.caixa-login h1 {
+  text-align: center;
+  margin-bottom: 0;
+  color: var(--cor-principal);
+}
+
+.subtitulo {
+  text-align: center;
+  color: var(--cor-texto-suave);
+  margin-top: 4px;
+}
+
+.caixa-login form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tema-flutuante {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  background: var(--cor-cartao);
+  color: var(--cor-texto);
+  box-shadow: var(--sombra);
+}
+
+.tema-flutuante:hover {
+  background: var(--cor-borda);
+}
+
+button.largo {
+  width: 100%;
+  margin-top: 4px;
+}
+
+.alternar {
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--cor-texto-suave);
+  margin-bottom: 0;
+}
+
+a {
+  color: var(--cor-principal);
+}
+
+.dica {
+  font-size: 0.85rem;
+  color: var(--cor-texto-suave);
+  margin: 0;
+}
+
+.aviso-seguranca {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--cor-texto-suave);
+}
+
+/* ===== Mensagens de erro / sucesso ===== */
+.mensagem {
+  padding: 8px 12px;
+  border-radius: var(--raio);
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.mensagem.erro {
+  background: var(--cor-vermelho-fundo);
+  color: var(--cor-vermelho);
+}
+
+.mensagem.sucesso {
+  background: var(--cor-verde-fundo);
+  color: var(--cor-verde);
+}
+
+/* O atributo hidden precisa vencer o display:flex de alguns elementos */
+[hidden] {
+  display: none !important;
+}

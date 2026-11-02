@@ -3,116 +3,82 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ReadEtec - Biblioteca</title>
+  <title>ReadEtec - Entrar</title>
   <link rel="stylesheet" href="css/style.css">
 
-  <!-- Aplica o tema ANTES de a página aparecer, para não "piscar" branco.
-       Usa o tema salvo; se não houver, segue o tema do sistema operacional. -->
-  <script>
-    (function () {
-      let tema = null;
-      try { tema = localStorage.getItem("tema"); } catch (e) {}
-      if (!tema) {
-        tema = window.matchMedia("(prefers-color-scheme: dark)").matches ? "escuro" : "claro";
-      }
-      document.documentElement.dataset.tema = tema;
-    })();
-  </script>
+  <script src="js/tema-inicial.js"></script>
+  <script src="js/dados.js"></script>
+  <script src="js/sessao.js"></script>
+  <!-- Se já estiver logado, vai direto para a sua área -->
+  <script>irParaAreaDoUsuario();</script>
 </head>
-<body>
+<body class="pagina-login">
 
-  <!-- Cabeçalho com o nome do sistema e o menu de abas -->
-  <header class="topo">
-    <div class="topo-linha">
-      <h1>📚 ReadEtec</h1>
-      <button id="botao-tema" title="Alternar tema claro/escuro">🌙</button>
+  <button id="botao-tema" class="tema-flutuante" title="Alternar tema claro/escuro">🌙</button>
+
+  <main class="caixa-login">
+    <h1>📚 ReadEtec</h1>
+    <p class="subtitulo">Biblioteca da Etec</p>
+
+    <!-- ============ ENTRAR ============ -->
+    <div id="painel-entrar" class="cartao">
+      <h2>Entrar</h2>
+      <form id="form-entrar">
+        <label>E-mail (ou "admin")
+          <input type="text" id="entrar-usuario" autocomplete="username" required>
+        </label>
+        <label>Senha
+          <input type="password" id="entrar-senha" autocomplete="current-password" required>
+        </label>
+
+        <p id="entrar-erro" class="mensagem erro" hidden></p>
+
+        <button type="submit" class="largo">Entrar</button>
+      </form>
+      <p class="alternar">
+        Ainda não tem conta? <a href="#" id="link-criar">Criar conta</a>
+      </p>
     </div>
-    <nav class="abas">
-      <button class="aba ativa" data-aba="livros">Livros</button>
-      <button class="aba" data-aba="leitores">Leitores</button>
-      <button class="aba" data-aba="emprestimos">Empréstimos</button>
-      <button class="aba" data-aba="pesquisa">Pesquisa</button>
-      <button class="aba" data-aba="notificacoes">Notificações</button>
-    </nav>
-  </header>
 
-  <main>
+    <!-- ============ CRIAR CONTA (leitor) ============ -->
+    <div id="painel-criar" class="cartao" hidden>
+      <h2>Criar conta de leitor</h2>
+      <form id="form-criar">
+        <label>Nome completo *
+          <input type="text" id="criar-nome" autocomplete="name" required>
+        </label>
+        <label>Turma ou função
+          <input type="text" id="criar-turma" placeholder="Ex.: 2º DS, Professor">
+        </label>
+        <label>E-mail *
+          <input type="email" id="criar-email" autocomplete="email" required>
+        </label>
+        <label>Telefone
+          <input type="tel" id="criar-tel" autocomplete="tel" placeholder="(11) 99999-9999">
+        </label>
+        <label>Senha * (mínimo 6 caracteres)
+          <input type="password" id="criar-senha" autocomplete="new-password" minlength="6" required>
+        </label>
+        <label>Confirmar senha *
+          <input type="password" id="criar-confirmar" autocomplete="new-password" minlength="6" required>
+        </label>
 
-    <!-- ============ ABA LIVROS ============ -->
-    <section id="livros" class="conteudo-aba ativa">
-      <div class="cartao">
-        <h2 id="titulo-form-livro">Cadastrar livro</h2>
+        <p class="dica">Você poderá adicionar outro e-mail, outro telefone e suas
+          preferências de leitura depois, em "Meu perfil".</p>
 
-        <form id="form-livro">
-          <!-- Campo escondido: guarda o id quando estamos EDITANDO um livro -->
-          <input type="hidden" id="livro-id">
+        <p id="criar-erro" class="mensagem erro" hidden></p>
 
-          <div class="grade">
-            <label>Título
-              <input type="text" id="livro-titulo" required>
-            </label>
-            <label>Autor
-              <input type="text" id="livro-autor" required>
-            </label>
-            <label>Gênero
-              <select id="livro-genero" required></select>
-            </label>
-            <label>Ano
-              <input type="number" id="livro-ano" min="1000" max="2100">
-            </label>
-          </div>
+        <button type="submit" class="largo">Criar conta</button>
+      </form>
+      <p class="alternar">
+        Já tem conta? <a href="#" id="link-entrar">Entrar</a>
+      </p>
+    </div>
 
-          <div class="botoes">
-            <button type="button" id="livro-limpar" class="secundario">Limpar</button>
-            <button type="submit">Salvar</button>
-          </div>
-        </form>
-      </div>
-
-      <div class="cartao">
-        <h2>Acervo</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Título</th>
-              <th>Autor</th>
-              <th>Gênero</th>
-              <th>Ano</th>
-              <th>Inclusão</th>
-              <th>Situação</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody id="tabela-livros"></tbody>
-        </table>
-        <p id="livros-vazio" class="vazio">Nenhum livro cadastrado ainda.</p>
-      </div>
-    </section>
-
-    <!-- ============ ABAS AINDA EM CONSTRUÇÃO ============ -->
-    <section id="leitores" class="conteudo-aba">
-      <div class="cartao"><p class="vazio">🚧 Em construção</p></div>
-    </section>
-
-    <section id="emprestimos" class="conteudo-aba">
-      <div class="cartao"><p class="vazio">🚧 Em construção</p></div>
-    </section>
-
-    <section id="pesquisa" class="conteudo-aba">
-      <div class="cartao"><p class="vazio">🚧 Em construção</p></div>
-    </section>
-
-    <section id="notificacoes" class="conteudo-aba">
-      <div class="cartao"><p class="vazio">🚧 Em construção</p></div>
-    </section>
-
+    <p class="aviso-seguranca">⚠️ Projeto escolar: não use uma senha que você usa em outros sites.</p>
   </main>
 
-  <!-- A ordem importa: dados.js primeiro, porque os outros usam as funções dele -->
-  <script src="js/dados.js"></script>
-  <script src="js/acervo-inicial.js"></script>
   <script src="js/tema.js"></script>
-  <script src="js/abas.js"></script>
-  <script src="js/livros.js"></script>
+  <script src="js/login.js"></script>
 </body>
 </html>

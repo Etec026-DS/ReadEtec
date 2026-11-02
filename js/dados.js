@@ -97,6 +97,72 @@ function carregarAcervoInicial() {
   localStorage.setItem("acervoInicialCarregado", "sim");
 }
 
+// ---------------------------------------------------------------------
+// LEITORES
+// Cada leitor é um objeto assim:
+//   { id, cartao: "RE-0001", nome, turma,
+//     email1, email2, tel1, tel2,
+//     preferencias: { autores: [...], generos: [...] },
+//     senha, criadoEm }
+// ---------------------------------------------------------------------
+
+// Gera o próximo número de cartão: RE-0001, RE-0002...
+// O contador fica salvo à parte, então um número NUNCA é reaproveitado,
+// mesmo que um leitor seja excluído.
+function proximoCartao() {
+  const ultimo = Number(localStorage.getItem("ultimoCartao") || 0);
+  const novo = ultimo + 1;
+  localStorage.setItem("ultimoCartao", novo);
+  return "RE-" + String(novo).padStart(4, "0");
+}
+
+function buscarLeitorPorId(id) {
+  return carregar("leitores").find(function (l) {
+    return l.id === id;
+  });
+}
+
+// Procura pelo e-mail principal OU secundário (sem diferenciar maiúsculas)
+function buscarLeitorPorEmail(email) {
+  email = email.trim().toLowerCase();
+  if (email === "") {
+    return undefined;
+  }
+  return carregar("leitores").find(function (l) {
+    return l.email1 === email || l.email2 === email;
+  });
+}
+
+// Diz se um e-mail já pertence a OUTRO leitor.
+// "idIgnorado" serve para a edição: o próprio leitor pode manter o seu e-mail.
+function emailEmUso(email, idIgnorado) {
+  const dono = buscarLeitorPorEmail(email);
+  return dono !== undefined && dono.id !== idIgnorado;
+}
+
+// Cria um leitor novo, salva e devolve o objeto criado
+function criarLeitor(dados) {
+  const leitores = carregar("leitores");
+
+  const leitor = {
+    id: gerarId(),
+    cartao: proximoCartao(),
+    nome: dados.nome.trim(),
+    turma: (dados.turma || "").trim(),
+    email1: dados.email1.trim().toLowerCase(),
+    email2: (dados.email2 || "").trim().toLowerCase(),
+    tel1: (dados.tel1 || "").trim(),
+    tel2: (dados.tel2 || "").trim(),
+    preferencias: dados.preferencias || { autores: [], generos: [] },
+    senha: dados.senha,
+    criadoEm: new Date().toISOString(),
+  };
+
+  leitores.push(leitor);
+  salvar("leitores", leitores);
+  return leitor;
+}
+
 // Diz se um livro está emprestado agora.
 // Por enquanto ainda não existem empréstimos, então a lista vem vazia.
 // Quando fizermos a aba Empréstimos, esta função já vai funcionar sozinha.
