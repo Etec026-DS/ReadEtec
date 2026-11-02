@@ -50,6 +50,53 @@ function escapar(texto) {
   return div.innerHTML;
 }
 
+// Transforma uma data salva ("2026-11-02T15:00:00.000Z") em "02/11/2026"
+function formatarData(dataIso) {
+  if (!dataIso) {
+    return "-";
+  }
+  return new Date(dataIso).toLocaleDateString("pt-BR");
+}
+
+// Adiciona os livros de ACERVO_INICIAL (acervo-inicial.js) uma única vez.
+// Uma "marca" no localStorage registra que isso já foi feito, assim os
+// exemplos não voltam se o bibliotecário excluir algum deles.
+function carregarAcervoInicial() {
+  if (localStorage.getItem("acervoInicialCarregado") === "sim") {
+    return;
+  }
+
+  const livros = carregar("livros");
+  const hoje = new Date();
+
+  ACERVO_INICIAL.forEach(function (exemplo, posicao) {
+    // Não duplica um título que já tenha sido cadastrado à mão
+    const jaExiste = livros.some(function (l) {
+      return l.titulo.toLowerCase() === exemplo.titulo.toLowerCase();
+    });
+    if (jaExiste) {
+      return;
+    }
+
+    // Datas de inclusão espalhadas: um livro a cada 7 dias para trás,
+    // para o acervo parecer real (e servir depois para as estatísticas)
+    const dataInclusao = new Date(hoje);
+    dataInclusao.setDate(hoje.getDate() - posicao * 7);
+
+    livros.push({
+      id: gerarId(),
+      titulo: exemplo.titulo,
+      autor: exemplo.autor,
+      genero: exemplo.genero,
+      ano: exemplo.ano,
+      criadoEm: dataInclusao.toISOString(),
+    });
+  });
+
+  salvar("livros", livros);
+  localStorage.setItem("acervoInicialCarregado", "sim");
+}
+
 // Diz se um livro está emprestado agora.
 // Por enquanto ainda não existem empréstimos, então a lista vem vazia.
 // Quando fizermos a aba Empréstimos, esta função já vai funcionar sozinha.

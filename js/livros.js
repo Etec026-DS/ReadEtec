@@ -49,6 +49,7 @@ function mostrarLivros() {
         <td>${escapar(livro.autor)}</td>
         <td>${escapar(livro.genero)}</td>
         <td>${livro.ano || "-"}</td>
+        <td>${formatarData(livro.criadoEm)}</td>
         <td>${etiqueta}</td>
         <td>
           <button class="icone" title="Editar" onclick="editarLivro('${livro.id}')">✏️</button>
@@ -141,6 +142,8 @@ function excluirLivro(id) {
 
 botaoLimparLivro.addEventListener("click", limparFormLivro);
 
-// Ao abrir a página: monta o select de gêneros e desenha a tabela
+// Ao abrir a página: coloca os livros de exemplo (só na 1ª vez),
+// monta o select de gêneros e desenha a tabela
+carregarAcervoInicial();
 preencherGeneros();
 mostrarLivros();
