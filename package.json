@@ -1,0 +1,36 @@
+{
+  "name": "readetec",
+  "version": "1.0.0",
+  "description": "ReadEtec - sistema de biblioteca",
+  "main": "main.js",
+  "author": "Lucas Sotero",
+  "scripts": {
+    "start": "electron .",
+    "build:win": "electron-builder --win portable --x64"
+  },
+  "build": {
+    "appId": "br.etec.readetec",
+    "productName": "ReadEtec",
+    "files": [
+      "main.js",
+      "index.html",
+      "admin.html",
+      "leitor.html",
+      "css/**/*",
+      "js/**/*"
+    ],
+    "win": {
+      "signAndEditExecutable": false
+    },
+    "portable": {
+      "artifactName": "ReadEtec.exe"
+    },
+    "directories": {
+      "output": "dist"
+    }
+  },
+  "devDependencies": {
+    "electron": "^45.2.2",
+    "electron-builder": "^26.18.0"
+  }
+}
