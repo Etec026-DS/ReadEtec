@@ -323,18 +323,28 @@ function registrarEmail(leitorId, tipo, assunto, corpo) {
     return;
   }
 
-  const emails = carregar("emails");
-  emails.push({
+  const registro = {
     id: gerarId(),
     leitorId: leitorId,
+    leitorNome: leitor.nome,
     tipo: tipo, // "prazo", "lembrete", "atraso", "novidade"
     para: [leitor.email1, leitor.email2].filter(Boolean), // envia para os dois e-mails, se houver
     assunto: assunto,
     corpo: corpo,
     enviadoEm: new Date().toISOString(),
     lido: false,
-  });
+    envio: "simulado", // "simulado", "enviando", "enviado" ou "erro"
+  };
+
+  const emails = carregar("emails");
+  emails.push(registro);
   salvar("emails", emails);
+
+  // Se o EmailJS estiver configurado nesta página (js/enviar-email.js),
+  // também envia o e-mail DE VERDADE. Senão, fica só a cópia simulada.
+  if (typeof enviarEmailReal === "function") {
+    enviarEmailReal(registro);
+  }
 }
 
 // Diz se um leitor está com algum livro emprestado (ainda não devolvido)

@@ -67,6 +67,7 @@
                       placeholder="Um resumo curto da história, sem contar o final"></textarea>
           </label>
           <p class="dica">A capa é buscada automaticamente na Open Library (acervo aberto de livros).</p>
+          <p id="livro-ok" class="mensagem sucesso" hidden></p>
 
           <div class="botoes">
             <button type="button" id="livro-limpar" class="secundario">Limpar</button>
@@ -262,13 +263,50 @@
     <!-- O conteúdo é montado por js/pesquisa.js -->
     <section id="pesquisa" class="conteudo-aba"></section>
 
+    <!-- ============ ABA NOTIFICAÇÕES ============ -->
     <section id="notificacoes" class="conteudo-aba">
-      <div class="cartao"><p class="vazio">🚧 Em construção</p></div>
+      <div class="cartao">
+        <h2>Avisos por e-mail</h2>
+        <p id="status-emailjs"></p>
+        <ul class="dica lista-avisos-tipos">
+          <li>⏰ <strong>Lembrete:</strong> quando faltam 2 dias ou menos para o fim do prazo</li>
+          <li>⚠️ <strong>Atraso:</strong> quando o prazo passou e o livro não foi devolvido</li>
+          <li>✨ <strong>Novidade:</strong> quando chega um livro do gênero ou autor favorito do leitor</li>
+          <li>📅 <strong>Prazo:</strong> resposta aos pedidos de mais prazo</li>
+        </ul>
+        <p class="dica">Os prazos são verificados sempre que o administrador abre o sistema.
+          Cada aviso é enviado uma única vez.</p>
+        <div class="botoes">
+          <button id="botao-verificar-prazos">Verificar prazos agora</button>
+        </div>
+        <p id="notif-resultado" class="mensagem sucesso" hidden></p>
+      </div>
+
+      <div class="cartao">
+        <h2>Histórico de e-mails</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Tipo</th>
+              <th>Para</th>
+              <th>Assunto</th>
+              <th>Envio</th>
+            </tr>
+          </thead>
+          <tbody id="tabela-emails"></tbody>
+        </table>
+        <p id="emails-vazio" class="vazio">Nenhum e-mail enviado ainda.</p>
+      </div>
     </section>
 
   </main>
 
   <!-- dados.js e sessao.js já foram carregados no <head> -->
+  <!-- EmailJS: biblioteca para enviar e-mails pelo navegador (emailjs.com) -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4.4.1/dist/email.min.js"></script>
+  <script src="js/config-email.js"></script>
+  <script src="js/enviar-email.js"></script>
   <script src="js/acervo-inicial.js"></script>
   <script src="js/tema.js"></script>
   <script src="js/abas.js"></script>
@@ -279,6 +317,7 @@
   <script src="js/emprestimos.js"></script>
   <script src="js/pesquisa.js"></script>
   <script src="js/capa-livro.js"></script>
+  <script src="js/notificacoes.js"></script>
   <script>
     // Monta a pesquisa na aba e atualiza sempre que a aba for aberta
     // (um livro pode ter sido cadastrado ou emprestado nesse meio-tempo)

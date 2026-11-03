@@ -203,6 +203,9 @@ function responderSolicitacao(id, aceitar) {
 
   if (aceitar) {
     emp.devolverAte = somarDias(new Date(emp.devolverAte), sol.dias).toISOString();
+    // Prazo novo = os avisos de lembrete e atraso valem de novo para a nova data
+    emp.avisoLembreteEnviado = false;
+    emp.avisoAtrasoEnviado = false;
   }
   sol.status = aceitar ? "aceita" : "recusada";
   sol.respondidoEm = new Date().toISOString();

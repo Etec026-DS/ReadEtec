@@ -66,6 +66,7 @@ function limparFormLivro() {
   campoId.value = "";
   campoExemplares.min = 1;
   tituloFormLivro.textContent = "Cadastrar livro";
+  document.getElementById("livro-ok").hidden = true;
 }
 
 // Chamado quando o formulário é enviado (botão Salvar)
@@ -112,11 +113,13 @@ formLivro.addEventListener("submit", function (evento) {
     }
   }
 
+  let livroNovo = null; // preenchido só quando é um cadastro novo
   if (campoId.value === "") {
     // NOVO livro: cria um id e adiciona na lista
     dados.id = gerarId();
     dados.criadoEm = new Date().toISOString();
     livros.push(dados);
+    livroNovo = dados;
   } else {
     // EDIÇÃO: procura o livro pelo id e atualiza os campos
     const livro = livros.find(function (l) {
@@ -134,6 +137,17 @@ formLivro.addEventListener("submit", function (evento) {
   salvar("livros", livros);
   limparFormLivro();
   mostrarLivros();
+
+  // Livro NOVO: avisa os leitores que gostam do gênero ou do autor (RF16)
+  const aviso = document.getElementById("livro-ok");
+  if (livroNovo) {
+    const avisados = avisarNovidade(livroNovo);
+    aviso.textContent = `"${livroNovo.titulo}" cadastrado.` +
+      (avisados > 0 ? ` ${avisados} leitor(es) com essa preferência foram avisados por e-mail.` : "");
+  } else {
+    aviso.textContent = "Alterações salvas.";
+  }
+  aviso.hidden = false;
 });
 
 // Carrega os dados de um livro no formulário para editar
