@@ -223,10 +223,28 @@ O sistema tem **uma única página** com um menu de abas no topo. Cada aba mostr
 
 ## E. Registro de uso da IA
 
+Ferramenta usada: **Claude Code** (assistente de programação com IA, da Anthropic), usado como "tutor" durante todo o desenvolvimento. O histórico de commits no GitHub mostra cada etapa abaixo.
+
 | Data | Ferramenta | O que foi solicitado | Como a resposta foi utilizada |
 |---|---|---|---|
-| 02/11 | Claude Code | Análise dos requisitos da atividade | Usado para entender as entregas e montar o cronograma |
-| 02/11 | Claude Code | Escolha da tecnologia e configuração do Git/GitHub | Escolhemos HTML/CSS/JS com localStorage; repositório criado na organização |
-| 02/11 | Claude Code | Revisão do texto de problema, público-alvo e requisitos | As ideias foram do grupo; a IA organizou o texto e ajudou a priorizar os requisitos |
-| 02/11 | Claude Code | Rascunho do protótipo das telas | Usado como base; o grupo revisou e redesenhou as telas |
-| 02/11 | Claude Code | Como enviar e-mails automáticos de prazo, atraso e novidades | O grupo definiu os requisitos; a IA explicou as limitações de um site estático e as opções de envio |
+| 02/11 | Claude Code | Análise dos requisitos da atividade (PDF do professor) | Usado para entender as entregas e montar o cronograma de trabalho |
+| 02/11 | Claude Code | Escolha da tecnologia e configuração do Git/GitHub | O grupo quis publicar no Render; a IA comparou opções e o grupo escolheu HTML/CSS/JS com localStorage. Repositório criado na organização do grupo |
+| 02/11 | Claude Code | Revisão do texto de problema, público-alvo e requisitos | As ideias foram do grupo (cartão da biblioteca, prazos, estatísticas); a IA organizou o texto e ajudou a priorizar os requisitos |
+| 02/11 | Claude Code | Rascunho do protótipo das telas | Usado como base para as telas do sistema |
+| 02/11 | Claude Code | Como enviar e-mails automáticos de prazo, atraso e novidades | O grupo definiu os requisitos; a IA explicou as limitações de um site estático e três opções. O grupo escolheu começar com e-mails simulados e depois usar o EmailJS |
+| 02/11 | Claude Code | Estrutura do site e cadastro de livros | Código gerado com explicações; o grupo testou no navegador |
+| 02/11 | Claude Code | Erro ao rodar o projeto com `npm run dev` | A IA explicou que um site estático não usa npm; o grupo passou a usar o Live Server / servidor local |
+| 02/11 | Claude Code | Data de inclusão e acervo inicial com 50 livros famosos | Pedido do grupo; a IA sugeriu os títulos e o grupo conferiu a lista |
+| 02/11 | Claude Code | Modo escuro | Preferência do grupo; a IA implementou usando variáveis de cor no CSS |
+| 02/11 | Claude Code | Página de login com perfis de administrador e leitor | O grupo definiu as permissões de cada perfil; a IA gerou o código e explicou as limitações de segurança |
+| 02/11 | Claude Code | Botão para mostrar a senha e aba Leitores do admin | O grupo percebeu que os leitores cadastrados não apareciam no admin; a IA explicou o motivo e implementou a aba |
+| 02/11 | Claude Code | Pesquisa sem diferenciar maiúsculas e acentos, com filtro de gênero | O grupo definiu como a busca deveria funcionar; a IA explicou a técnica de normalização de texto |
+| 02/11 | Claude Code | Aba de empréstimos e devoluções | A IA propôs as regras de limite de livros, atraso e multa; o grupo aprovou e testou |
+| 02/11 | Claude Code | Área do leitor: perfil, troca de senha, exclusão de conta, histórico e pedido de mais prazo | Funções definidas pelo grupo; nos testes foi encontrado e corrigido um erro (nome do leitor desatualizado) |
+| 02/11 | Claude Code | Vários exemplares por livro | Ideia do grupo (uma biblioteca real tem várias cópias); a IA adaptou o sistema e atualizou os dados antigos |
+| 02/11 | Claude Code | Revisão de bugs e vulnerabilidades | A IA encontrou 7 problemas, entre eles uma falha de segurança (XSS), comprovou cada um com testes e corrigiu |
+| 02/11 | Claude Code | Capas e sinopses dos livros ao passar o mouse | A IA buscou as capas na Open Library; as capas erradas foram identificadas e trocadas; as sinopses foram revisadas pelo grupo |
+| 02/11 | Claude Code | Publicação do site no Render | A IA orientou o passo a passo; o grupo publicou o site em https://readetec.onrender.com |
+| 02/11 | Claude Code | Dúvidas sobre armazenamento sem banco, segurança da senha e variáveis de ambiente | Respostas usadas para entender o sistema e preparar a apresentação |
+| 02/11 | Claude Code | Pop-up para escolher preferências logo após criar a conta | O grupo identificou que o cadastro ficava incompleto; a IA implementou o pop-up |
+| 02/11 | Claude Code | Avisos automáticos por e-mail com EmailJS | O grupo criou a conta no EmailJS e conectou o e-mail; a IA integrou ao sistema e testou os avisos de prazo simulando datas passadas |
