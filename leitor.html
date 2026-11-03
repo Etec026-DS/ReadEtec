@@ -211,6 +211,36 @@
 
   </main>
 
+  <!-- ============ POP-UP DE BOAS-VINDAS (preferências) ============
+       <dialog> é um elemento do próprio HTML para janelas "pop-up".
+       Aparece no primeiro acesso de quem ainda não escolheu preferências. -->
+  <dialog id="dialog-boas-vindas" class="dialog">
+    <form id="form-boas-vindas" method="dialog">
+      <h2>👋 Bem-vindo(a) ao ReadEtec, <span id="boas-nome"></span>!</h2>
+      <p>Seu cartão da biblioteca é o <strong id="boas-cartao"></strong>.</p>
+      <p class="dica">Conte do que você gosta de ler: avisaremos por e-mail quando chegarem
+        livros novos dos seus gêneros e autores favoritos.</p>
+
+      <p class="rotulo">Gêneros favoritos</p>
+      <div id="boas-generos" class="grade-checks"></div>
+
+      <p class="rotulo">Autores favoritos</p>
+      <div class="linha-autor">
+        <input type="text" id="boas-autor-input" list="boas-lista-autores"
+               placeholder="Digite um autor e clique em Adicionar">
+        <button type="button" id="boas-autor-add" class="secundario">Adicionar</button>
+      </div>
+      <datalist id="boas-lista-autores"></datalist>
+      <div id="boas-autores" class="chips"></div>
+
+      <div class="botoes">
+        <button type="button" id="boas-pular" class="secundario">Agora não</button>
+        <button type="submit" id="boas-salvar">Salvar preferências</button>
+      </div>
+      <p class="dica centro">Você pode mudar isso quando quiser em "Meu perfil".</p>
+    </form>
+  </dialog>
+
   <script src="js/acervo-inicial.js"></script>
   <script src="js/tema.js"></script>
   <script src="js/abas.js"></script>

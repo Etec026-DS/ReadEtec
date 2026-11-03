@@ -259,6 +259,7 @@ document.getElementById("form-perfil").addEventListener("submit", function (even
     tel1: document.getElementById("perfil-tel1").value.trim(),
     tel2: document.getElementById("perfil-tel2").value.trim(),
     preferencias: preferenciasPerfil.obter(),
+    preferenciasConfiguradas: true,
   });
   salvar("leitores", leitores);
 
@@ -405,6 +406,60 @@ function mostrarAvisos() {
 }
 
 // =====================================================================
+// POP-UP DE BOAS-VINDAS: escolher as preferências logo no primeiro acesso
+// =====================================================================
+
+const dialogBoasVindas = document.getElementById("dialog-boas-vindas");
+const preferenciasBoasVindas = criarSeletorPreferencias("boas");
+
+// Mostra o pop-up só para quem ainda não passou por ele E não tem preferências
+// (um leitor cadastrado pelo admin com preferências já escolhidas não vê)
+function talvezMostrarBoasVindas() {
+  const leitor = leitorAtual();
+  const temPreferencias = leitor.preferencias &&
+    (leitor.preferencias.generos.length > 0 || leitor.preferencias.autores.length > 0);
+  if (leitor.preferenciasConfiguradas || temPreferencias) {
+    return;
+  }
+  document.getElementById("boas-nome").textContent = leitor.nome.split(" ")[0];
+  document.getElementById("boas-cartao").textContent = leitor.cartao;
+  preferenciasBoasVindas.atualizarSugestoes();
+  preferenciasBoasVindas.limpar();
+  dialogBoasVindas.showModal(); // showModal = abre por cima de tudo e bloqueia o fundo
+}
+
+// Marca que o leitor já passou pelo pop-up (salvando ou pulando)
+function concluirBoasVindas(preferencias) {
+  const leitores = carregar("leitores");
+  const leitor = leitores.find(function (l) {
+    return l.id === sessaoLeitor.leitorId;
+  });
+  if (preferencias) {
+    leitor.preferencias = preferencias;
+  }
+  leitor.preferenciasConfiguradas = true;
+  salvar("leitores", leitores);
+  dialogBoasVindas.close();
+  preencherPerfil(); // o "Meu perfil" já mostra o que foi escolhido
+}
+
+document.getElementById("form-boas-vindas").addEventListener("submit", function (evento) {
+  evento.preventDefault();
+  if (!garantirSessaoValida()) return;
+  concluirBoasVindas(preferenciasBoasVindas.obter());
+});
+
+document.getElementById("boas-pular").addEventListener("click", function () {
+  concluirBoasVindas(null);
+});
+
+// A tecla Esc também fecha o <dialog>: tratamos como "Agora não"
+dialogBoasVindas.addEventListener("cancel", function (evento) {
+  evento.preventDefault();
+  concluirBoasVindas(null);
+});
+
+// =====================================================================
 // INÍCIO
 // =====================================================================
 
@@ -419,6 +474,7 @@ if (leitorAtual()) {
   mostrarMeusEmprestimos();
   preencherPerfil();
   atualizarContadorAvisos();
+  talvezMostrarBoasVindas();
 
   // Atualiza cada aba quando ela é aberta
   document.addEventListener("abaAberta", function (evento) {
