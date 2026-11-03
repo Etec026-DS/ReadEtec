@@ -15,7 +15,7 @@ Uma biblioteca que não tem um sistema informatizado controla tudo em papel ou p
 - **Dificuldade para catalogar o acervo:** não se sabe com facilidade quais livros existem, de que autor ou gênero são, nem quantos exemplares há.
 - **Empréstimos sem controle:** um livro pode ser "emprestado" duas vezes, e fica difícil saber com quem ele está.
 - **Prazos esquecidos:** não há aviso de quais livros já deveriam ter sido devolvidos, o que gera atrasos e perda de livros.
-- **Cadastro de leitores desorganizado:** a identificação dos leitores (cartão da biblioteca) é manual e sujeita a erros.
+- **Cadastro de leitores desorganizado:** a identificação dos leitores é feita à mão (nome anotado num caderno), o que gera confusão entre pessoas com nomes parecidos e erros nos registros.
 - **Falta de informação para decisões:** a biblioteca não sabe quais livros, autores e gêneros são os mais procurados, e por isso não consegue planejar novas aquisições.
 
 O **ReadEtec** resolve esses problemas centralizando o cadastro de livros e leitores, o controle de empréstimos e devoluções com prazos, e a consulta ao acervo.
@@ -26,7 +26,7 @@ O sistema tem **dois tipos de usuário**, cada um com permissões próprias:
 
 **Administrador: o bibliotecário.** Entra com o usuário `admin`. Gerencia o acervo, cadastra, edita e exclui leitores, registra empréstimos e devoluções e acompanha as notificações.
 
-**Leitor:** alunos, professores e funcionários da Etec. **Cria a própria conta** com e-mail e senha e recebe automaticamente um **número de cartão da biblioteca** (credencial digital), que o identifica nos empréstimos. Pela sua área, ele pesquisa o acervo, acompanha os seus empréstimos, edita o seu perfil e as suas preferências e lê os avisos recebidos. O leitor **não** registra empréstimos: isso é feito pelo bibliotecário no balcão, na entrega do livro físico.
+**Leitor:** alunos, professores e funcionários da Etec. **Cria a própria conta** com e-mail e senha e recebe automaticamente um **número de leitor** (ex.: RE-0001), que o identifica nos empréstimos. Esse número é apenas **digital**: aparece no perfil e nas telas do sistema (com o nome "Cartão"), mas **não existe um cartão físico** nesta versão. Pela sua área, ele pesquisa o acervo, acompanha os seus empréstimos, edita o seu perfil e as suas preferências e lê os avisos recebidos. O leitor **não** registra empréstimos: isso é feito pelo bibliotecário no balcão, na entrega do livro físico.
 
 ## C. Requisitos
 
@@ -38,7 +38,7 @@ O sistema tem **dois tipos de usuário**, cada um com permissões próprias:
 |---|---|
 | RF01 | Cadastrar, editar e excluir livros (título, autor, gênero, ano, **quantidade de exemplares**). A **data de inclusão** é registrada automaticamente. O sistema já vem com um **acervo inicial de 50 livros** (25 brasileiros e 25 estrangeiros) |
 | RF02 | Cadastrar leitores (nome, turma/função, **e-mail principal e secundário**, **telefone principal e secundário**) |
-| RF03 | Gerar automaticamente um **número de cartão da biblioteca** para cada leitor cadastrado |
+| RF03 | Gerar automaticamente um **número de leitor** único (RE-0001, RE-0002...) para cada leitor cadastrado. Ele é a identificação digital do leitor no sistema (não há cartão físico) e nunca é reaproveitado |
 | RF04 | Realizar empréstimo de um livro para um leitor |
 | RF05 | **Impedir o empréstimo de um livro que já está emprestado** |
 | RF06 | Definir automaticamente a **data prevista de devolução** (7 dias após o empréstimo) |
@@ -61,9 +61,9 @@ O sistema tem **dois tipos de usuário**, cada um com permissões próprias:
 
 | Código | Requisito |
 |---|---|
-| RF10 | Listar os empréstimos **atrasados** (agenda de devoluções) |
-| RF11 | Mostrar estatísticas: livros, autores e gêneros mais emprestados |
-| RF12 | Calcular a multa por atraso (ex.: R$ 1,00 por dia) |
+| RF10 | Listar os empréstimos **atrasados** (agenda de devoluções) ✅ feito |
+| RF11 | Mostrar estatísticas: livros, autores e gêneros mais emprestados ❌ não feito (melhoria futura) |
+| RF12 | Calcular a multa por atraso (ex.: R$ 1,00 por dia) ✅ feito |
 
 **Notificações por e-mail:**
 
@@ -76,6 +76,8 @@ O sistema tem **dois tipos de usuário**, cada um com permissões próprias:
 | RF17 | Usar **modelos de e-mail pré-programados** para cada tipo de aviso e registrar os e-mails enviados num histórico |
 
 **Fora do escopo desta versão (melhorias futuras):**
+- Estatísticas de livros, autores e gêneros mais emprestados (RF11)
+- Cartão físico da biblioteca (impresso, com código de barras ou QR Code do número de leitor)
 - Multa por dano ao livro
 - Acesso dos leitores ao sistema (login próprio)
 - Banco de dados em servidor, para os dados serem compartilhados entre computadores
@@ -150,7 +152,7 @@ O sistema tem **uma única página** com um menu de abas no topo. Cada aba mostr
 │  RE-0002  │ Bruno Lima      │ Prof.   │ bruno@email.com│✏️🗑│
 └─────────────────────────────────────────────────────────────┘
 ```
-- O número do cartão (RE-0001, RE-0002...) é gerado automaticamente ao salvar.
+- O número de leitor (RE-0001, RE-0002...) é gerado automaticamente ao salvar e aparece na coluna "Cartão".
 - O e-mail principal é obrigatório; o secundário e os telefones são opcionais.
 - Os avisos são enviados para os dois e-mails, quando houver.
 
@@ -210,7 +212,7 @@ O sistema tem **uma única página** com um menu de abas no topo. Cada aba mostr
 ```
 - O resultado é filtrado enquanto o usuário digita.
 
-### (Desejável) Tela 5: Estatísticas (RF11)
+### (Desejável, não implementada) Tela 5: Estatísticas (RF11)
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -229,7 +231,7 @@ Ferramenta usada: **Claude Code** (assistente de programação com IA, da Anthro
 |---|---|---|---|
 | 02/11 | Claude Code | Análise dos requisitos da atividade (PDF do professor) | Usado para entender as entregas e montar o cronograma de trabalho |
 | 02/11 | Claude Code | Escolha da tecnologia e configuração do Git/GitHub | O grupo quis publicar no Render; a IA comparou opções e o grupo escolheu HTML/CSS/JS com localStorage. Repositório criado na organização do grupo |
-| 02/11 | Claude Code | Revisão do texto de problema, público-alvo e requisitos | As ideias foram do grupo (cartão da biblioteca, prazos, estatísticas); a IA organizou o texto e ajudou a priorizar os requisitos |
+| 02/11 | Claude Code | Revisão do texto de problema, público-alvo e requisitos | As ideias foram do grupo (identificação digital do leitor, prazos de devolução, estatísticas); a IA organizou o texto e ajudou a priorizar os requisitos |
 | 02/11 | Claude Code | Rascunho do protótipo das telas | Usado como base para as telas do sistema |
 | 02/11 | Claude Code | Como enviar e-mails automáticos de prazo, atraso e novidades | O grupo definiu os requisitos; a IA explicou as limitações de um site estático e três opções. O grupo escolheu começar com e-mails simulados e depois usar o EmailJS |
 | 02/11 | Claude Code | Estrutura do site e cadastro de livros | Código gerado com explicações; o grupo testou no navegador |
