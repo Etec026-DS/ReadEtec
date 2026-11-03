@@ -3,6 +3,8 @@
 **Atividade:** Construção de Software com IA
 **Autores:** Lucas Sotero, Isabelle Antunes e Caroline Cheminand
 **Data:** 02/11/2026
+**Sistema online:** https://readetec.onrender.com
+**Código-fonte:** https://github.com/Etec026-DS/ReadEtec
 
 ---
 
@@ -52,6 +54,8 @@ O sistema tem **dois tipos de usuário**, cada um com permissões próprias:
 | RF24 | O leitor pode **pedir mais prazo** (1 a 7 dias, com motivo opcional); o admin **aceita ou recusa**, e o leitor recebe um aviso com a resposta |
 | RF25 | O admin **registra o pagamento** das multas |
 | RF26 | Ao passar o mouse (ou tocar, no celular) sobre um livro, mostrar a **capa** e uma **sinopse** curta. As capas vêm da Open Library (acervo aberto e gratuito); para livros novos, a capa é buscada automaticamente |
+| RF27 | No **primeiro acesso**, o leitor vê um **pop-up de boas-vindas** para escolher os gêneros e autores favoritos (pode pular e escolher depois em "Meu perfil") |
+| RF28 | Envio **real** dos e-mails pelo **EmailJS** (serviço gratuito de envio pelo navegador); sem configuração, os e-mails ficam em modo simulado |
 
 **Desejáveis (se der tempo):**
 
